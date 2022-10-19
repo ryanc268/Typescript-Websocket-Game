@@ -1,37 +1,68 @@
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
-import io from "socket.io-client";
+import SocketIOClient, { Socket } from "socket.io-client";
 import { useEffect, useRef } from "react";
-import startWebsocket from "./websocket/server"
+import { ControlsInterface, Player } from "../types/gameTypes";
+import { KeyMap } from "../types/gameEnums";
 
 const Home: NextPage = () => {
-  const socket = io();
+  let socket: Socket = SocketIOClient();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const width = typeof window !== "undefined" ? window.innerWidth : 500;
-  const height = typeof window !== "undefined" ? window.innerHeight : 500;
+  let width: number;
+  let height: number;
 
-  const coinAudio = useRef<HTMLAudioElement | undefined>(
-    typeof Audio !== "undefined" ? new Audio("../public/coin.mp3") : undefined
+  let coinAudio = useRef<HTMLAudioElement | undefined>(
+    typeof Audio !== "undefined" ? new Audio("/coin.mp3") : undefined
   );
 
   const TILE_SIZE = 32;
-  const COIN_SIZE = 6;
+  const COIN_SIZE = 10;
   const PLAYER_SIZE = 16;
 
-  let map = [[]];
-  let players: any = [];
-  let coins: any = [];
+  let map: number[][] = [];
+  let players: Player[] = [];
+  let coins: any[] = [];
 
   let lastRender = 0;
 
-  useEffect(() => {
+  //sets up the game with the server and events
+  useEffect((): any => {
+    const isSupported = window && window.addEventListener;
+    if (!isSupported) return;
+
+    window.addEventListener("keydown", (e) =>
+      setControls(e.key as KeyMap, true)
+    );
+    window.addEventListener("keyup", (e) =>
+      setControls(e.key as KeyMap, false)
+    );
+
+    width = window.innerWidth;
+    height = window.innerHeight;
+
+    coinAudio.current!.volume = 0.1;
+
+    socketInitializer();
     const canvas = canvasRef.current;
     const context = canvas!.getContext("2d");
+    canvas!.width = width;
+    canvas!.height = height;
     contextRef.current = context;
     startCanvas();
+
+    //cleans up events
+    return () => {
+      window.removeEventListener("keydown", (e) =>
+        setControls(e.key as KeyMap, true)
+      );
+      window.removeEventListener("keyup", (e) =>
+        setControls(e.key as KeyMap, false)
+      );
+      socket.disconnect();
+    };
   }, []);
 
   const startCanvas = () => {
@@ -39,7 +70,6 @@ const Home: NextPage = () => {
     setInterval(drawLeaderboard, 2000);
     drawLeaderboard();
     window.requestAnimationFrame(loop);
-    startWebsocket();
   };
 
   const drawLeaderboard = () => {
@@ -52,63 +82,61 @@ const Home: NextPage = () => {
     }
   };
 
-  interface controlsInterface {
-    up: boolean;
-    down: boolean;
-    left: boolean;
-    right: boolean;
-    jump: boolean;
-  }
-
-  const controls: controlsInterface = {
+  const controls: ControlsInterface = {
     up: false,
     down: false,
     left: false,
     right: false,
     jump: false,
+    respawn: false,
   };
 
-  enum KeyMap {
-    Up = "w",
-    Down = "s",
-    Left = "a",
-    Right = "d",
-    Jump = " ",
-  }
-
-  const setControls = (key: KeyMap) => {
-    switch (key) {
-      case KeyMap.Up:
-        controls.up = false;
-      case KeyMap.Down:
-        controls.down = false;
-      case KeyMap.Up:
-        controls.up = false;
-      case KeyMap.Up:
-        controls.up = false;
-      case KeyMap.Up:
-        controls.up = false;
+  const setControls = (key: KeyMap, active: boolean) => {
+    if (key == KeyMap.Down) {
+      controls.down = active;
+    }
+    if (key == KeyMap.Left) {
+      controls.left = active;
+    }
+    if (key == KeyMap.Right) {
+      controls.right = active;
+    }
+    if (key == KeyMap.Jump) {
+      controls.jump = active;
+    }
+    if (key == KeyMap.Respawn) {
+      controls.respawn = active;
     }
   };
 
-  socket.on("map", (serverMap) => {
-    map = serverMap;
-  });
+  const socketInitializer = async () => {
+    await fetch("/api/socket");
+    socket = SocketIOClient();
 
-  socket.on("players", (serverPlayers) => {
-    players = serverPlayers;
-  });
+    socket.on("connect", () => {
+      console.log("Connected to the server.");
+    });
 
-  socket.on("coins", (serverCoins) => {
-    coins = serverCoins;
-  });
+    socket.on("map", (serverMap) => {
+      console.log("Generating New Map!");
+      map = serverMap;
+    });
 
-  socket.on("playCoinSound", () => {
-    coinAudio.current!.currentTime = 0;
-    coinAudio.current!.play();
-  });
+    socket.on("players", (serverPlayers) => {
+      players = serverPlayers;
+    });
 
-  function update(delta: any) {
+    socket.on("coins", (serverCoins) => {
+      coins = serverCoins;
+    });
+
+    socket.on("playCoinSound", () => {
+      coinAudio.current!.currentTime = 0;
+      coinAudio.current!.play();
+    });
+  };
+
+  function update(delta: number) {
     socket.emit("controls", controls);
   }
 
@@ -119,14 +147,14 @@ const Home: NextPage = () => {
     let cy = 0;
 
     const playerToFocus = players.find(
-      (player: any) => player.id === socket.id
+      (player: Player) => player.id === socket.id
     );
     if (playerToFocus) {
       cx = playerToFocus.x - canvasRef.current!.width / 2 + 140;
       cy = playerToFocus.y - canvasRef.current!.height / 2;
     }
 
-    contextRef.current!.fillStyle = "#000000";
+    contextRef.current!.fillStyle = "#7ca6e4";
     for (let row = 0; row < map.length; row++) {
       for (let col = 0; col < map[row].length; col++) {
         const tileType = map[row][col];
@@ -141,7 +169,7 @@ const Home: NextPage = () => {
       }
     }
     for (const coin of coins) {
-      contextRef.current!.fillStyle = "#FF00FF";
+      contextRef.current!.fillStyle = "#d4ba22";
       contextRef.current!.fillRect(
         coin.x - cx,
         coin.y - cy,
@@ -161,14 +189,14 @@ const Home: NextPage = () => {
         );
       }
 
-      contextRef.current!.fillStyle = player.color;
+      contextRef.current!.fillStyle = player.colour;
       contextRef.current!.fillRect(
         player.x - cx,
         player.y - cy,
         PLAYER_SIZE,
         PLAYER_SIZE
       );
-      contextRef.current!.fillStyle = "#000000";
+      contextRef.current!.fillStyle = "#eeeeee";
       contextRef.current!.fillText(
         player.name,
         player.x - 10 - cx,
@@ -177,7 +205,7 @@ const Home: NextPage = () => {
     }
   }
 
-  function loop(timestamp: any) {
+  function loop(timestamp: number) {
     const delta = timestamp - lastRender;
 
     update(delta);
@@ -189,15 +217,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <canvas
-        id="canvas"
-        ref={canvasRef}
-        width={width}
-        height={height}
-        onKeyDown={(e) => setControls(e.key as KeyMap)}
-        onKeyUp={(e) => setControls(e.key as KeyMap)}
-      ></canvas>
-
+      <canvas id="canvas" ref={canvasRef}></canvas>
       <div
         id="leaderboard"
         ref={leaderboardElRef}
