@@ -28,7 +28,7 @@ const SocketHandler = async (
     const COIN_SIZE = 10;
     //Higher = faster
     const PLAYER_SPEED = 9.0;
-    const END_GAME_SCORE = 1;
+    const END_GAME_SCORE = 5;
     const COIN_SPAWN_RATE = 1250;
     const MAX_COINS = 20;
     const PLAYER_SIZE = 16;
@@ -176,8 +176,8 @@ const SocketHandler = async (
         player.vy = 0;
       }
       coins = [];
-      map = randomMap();
-      sendMap(mainSocket);
+      //map = randomMap();
+      //sendMap(mainSocket);
     };
 
     const spawnCoin = () => {

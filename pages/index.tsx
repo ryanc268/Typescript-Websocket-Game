@@ -118,7 +118,7 @@ const Home: NextPage = () => {
     });
 
     socket.on("map", (serverMap) => {
-      console.log("Generating New Map!");
+      //console.log("Generating New Map!");
       map = serverMap;
     });
 
