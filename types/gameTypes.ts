@@ -18,6 +18,7 @@ export interface Player {
   score: number;
   colour: string;
   jumps: Jumps;
+  ping: number;
   x: number;
   y: number;
   vx: number;

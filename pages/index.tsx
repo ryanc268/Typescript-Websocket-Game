@@ -99,13 +99,13 @@ const Home: NextPage = () => {
   };
 
   const drawLeaderboard = () => {
-    leaderboardElRef.current!.innerHTML = "Scores!";
+    leaderboardElRef.current!.innerHTML = "Scoreboard!";
     const lineBreak = document.createElement("hr");
     leaderboardElRef.current!.append(lineBreak);
     const sortedScores = [...players].sort((p1, p2) => p2.score - p1.score);
     for (const player of sortedScores) {
       const scoreEl = document.createElement("div");
-      scoreEl.innerText = `${player.name}: ${player.score}/5`;
+      scoreEl.innerText = `${player.name}: ${player.score}/5 - ${player.ping}ms`;
       leaderboardElRef.current!.append(scoreEl);
     }
   };
@@ -199,6 +199,9 @@ const Home: NextPage = () => {
     socket.on("playDefeatSound", () => {
       defeatAudio.current!.currentTime = 0;
       defeatAudio.current!.play();
+    });
+    socket.on("ping", (callback) => {
+      callback();
     });
   };
 

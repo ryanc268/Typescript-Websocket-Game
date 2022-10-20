@@ -78,7 +78,18 @@ const SocketHandler = async (
         id: socket.id,
         colour: `#${Math.floor(Math.random() * (0xffffff + 1)).toString(16)}`,
         jumps: { 1: true, 2: true },
+        ping: 0,
       };
+
+      setInterval(() => {
+        socketMap.forEach((value, key) => {
+          const start = Date.now();
+          value.emit("ping", () => {
+            const duration = Date.now() - start;
+            playerSocketMap.get(key)!.ping = duration;
+          });
+        });
+      }, 5000);
 
       socketMap.forEach((value, key) => {
         if (key !== player.id) {
