@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   );
 
   const TILE_SIZE = 32;
-  const COIN_SIZE = 10;
+  const COIN_SIZE = 12;
   const PLAYER_SIZE = 16;
 
   let map: number[][] = [];
@@ -53,10 +53,11 @@ const Home: NextPage = () => {
       if (bgMusic.current!.paused) {
         bgMusic.current!.play();
       }
-      setControls(e.key as KeyMap, true);
+      console.log(e.key.toLowerCase());
+      setControls(e.key.toLowerCase() as KeyMap, true);
     });
     window.addEventListener("keyup", (e) =>
-      setControls(e.key as KeyMap, false)
+      setControls(e.key.toLowerCase() as KeyMap, false)
     );
 
     width = window.innerWidth;
@@ -105,8 +106,34 @@ const Home: NextPage = () => {
     const sortedScores = [...players].sort((p1, p2) => p2.score - p1.score);
     for (const player of sortedScores) {
       const scoreEl = document.createElement("div");
-      scoreEl.innerText = `${player.name}: ${player.score}/5 - ${player.ping}ms`;
+      const label = document.createElement("div");
+      const ping = document.createElement("span");
+      label.innerText = `${player.name}: ${player.score}/5`;
+      ping.className = `${styles.ping}`;
+      ping.style.color = pingColourPicker(player.ping);
+      ping.innerHTML = `${player.ping}ms`;
+      scoreEl.append(label);
+      scoreEl.append(ping);
       leaderboardElRef.current!.append(scoreEl);
+    }
+  };
+
+  const pingColourPicker = (ping: number) => {
+    switch (true) {
+      case ping < 50:
+        return "#2ac237";
+      case ping < 100:
+        return "#186e1f";
+      case ping < 150:
+        return "#d0f05d";
+      case ping < 200:
+        return "#e7ba3e";
+      case ping < 250:
+        return "#e6873b";
+      case ping >= 250:
+        return "#aa3229";
+      default:
+        return "#2ac237";
     }
   };
 
@@ -117,6 +144,7 @@ const Home: NextPage = () => {
     right: false,
     jump: false,
     respawn: false,
+    sprint: false,
   };
 
   const setControls = (key: KeyMap, active: boolean) => {
@@ -134,6 +162,9 @@ const Home: NextPage = () => {
     }
     if (key == KeyMap.Respawn) {
       controls.respawn = active;
+    }
+    if (key == KeyMap.Sprint) {
+      controls.sprint = active;
     }
   };
 
@@ -297,6 +328,7 @@ const Home: NextPage = () => {
         <li>D = Right</li>
         <li>S = Fast Fall</li>
         <li>R = Respawn</li>
+        <li>Shift = Sprint</li>
         <li>Space = Jump</li>
       </ul>
       <ToastContainer

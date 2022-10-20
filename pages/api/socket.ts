@@ -25,7 +25,7 @@ const SocketHandler = async (
     const GRAVITY = 0.0218;
     const TICK_RATE = 40;
     const TILE_SIZE = 32;
-    const COIN_SIZE = 10;
+    const COIN_SIZE = 12;
     //Higher = faster
     const PLAYER_SPEED = 9.0;
     const END_GAME_SCORE = 5;
@@ -249,16 +249,24 @@ const SocketHandler = async (
             player.y = 100;
           }
           if (playerControls.right) {
-            player.x += PLAYER_SPEED;
+            player.x += playerControls.sprint
+              ? PLAYER_SPEED * 1.5
+              : PLAYER_SPEED;
 
             if (isCollidingWithMap(player)) {
-              player.x -= PLAYER_SPEED;
+              player.x -= playerControls.sprint
+                ? PLAYER_SPEED * 1.5
+                : PLAYER_SPEED;
             }
           } else if (playerControls.left) {
-            player.x -= PLAYER_SPEED;
+            player.x -= playerControls.sprint
+              ? PLAYER_SPEED * 1.5
+              : PLAYER_SPEED;
 
             if (isCollidingWithMap(player)) {
-              player.x += PLAYER_SPEED;
+              player.x += playerControls.sprint
+                ? PLAYER_SPEED * 1.5
+                : PLAYER_SPEED;
             }
           }
 

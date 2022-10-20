@@ -5,4 +5,5 @@ export enum KeyMap {
   Right = "d",
   Jump = " ",
   Respawn = "r",
+  Sprint = "shift",
 }

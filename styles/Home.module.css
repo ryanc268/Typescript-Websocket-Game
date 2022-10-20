@@ -7,7 +7,14 @@
   top: 0px;
   height: 100vh;
   padding: 10px;
-  font-size: 14px;
+  font-size: 18px;
+}
+
+.ping {
+  padding: 0px;
+  margin: 0px;
+  display: flex;
+  font-size: 12px;
 }
 
 .controls {

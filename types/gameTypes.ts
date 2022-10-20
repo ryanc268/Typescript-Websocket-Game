@@ -5,6 +5,7 @@ export interface ControlsInterface {
   right: boolean;
   jump: boolean;
   respawn: boolean;
+  sprint: boolean;
 }
 
 export interface Jumps {
