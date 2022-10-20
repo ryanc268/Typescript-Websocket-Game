@@ -2,7 +2,7 @@
 import type { NextApiRequest } from "next";
 import { Server as ServerIO, Socket } from "socket.io";
 import { Server as NetServer } from "http";
-import { NextApiResponseServerIO } from "../../types/next";
+import { NextApiResponseServerIO } from "../../global/types/next";
 import {
   Coin,
   Collidable,
@@ -10,8 +10,9 @@ import {
   Jumps,
   Player,
   Rect,
-} from "../../types/gameTypes";
+} from "../../global/types/gameTypes";
 import { mainMap, randomMap } from "../../maps/maps";
+import { TILE_SIZE, PLAYER_SIZE, COIN_SIZE, END_GAME_SCORE } from "../../global/constants";
 const random = require("random-name");
 
 const SocketHandler = async (
@@ -24,14 +25,10 @@ const SocketHandler = async (
     //Higher = more pull
     const GRAVITY = 0.0218;
     const TICK_RATE = 40;
-    const TILE_SIZE = 32;
-    const COIN_SIZE = 12;
     //Higher = faster
     const PLAYER_SPEED = 9.0;
-    const END_GAME_SCORE = 5;
     const COIN_SPAWN_RATE = 1250;
-    const MAX_COINS = 20;
-    const PLAYER_SIZE = 16;
+    const MAX_COINS = 10;
     //Lower = faster
     const JUMP_SPEED = -13;
     let map: number[][] = randomMap();

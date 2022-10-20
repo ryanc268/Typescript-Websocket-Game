@@ -2,10 +2,16 @@ import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 import SocketIOClient, { Socket } from "socket.io-client";
 import { useEffect, useRef } from "react";
-import { ControlsInterface, Player } from "../types/gameTypes";
-import { KeyMap } from "../types/gameEnums";
+import { ControlsInterface, Player } from "../global/types/gameTypes";
+import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  TILE_SIZE,
+  COIN_SIZE,
+  PLAYER_SIZE,
+  END_GAME_SCORE,
+} from "../global/constants";
 
 const Home: NextPage = () => {
   let socket: Socket; //SocketIOClient();
@@ -34,10 +40,6 @@ const Home: NextPage = () => {
     typeof Audio !== "undefined" ? new Audio("/defeat.wav") : undefined
   );
 
-  const TILE_SIZE = 32;
-  const COIN_SIZE = 12;
-  const PLAYER_SIZE = 16;
-
   let map: number[][] = [];
   let players: Player[] = [];
   let coins: any[] = [];
@@ -50,10 +52,7 @@ const Home: NextPage = () => {
     if (!isSupported) return;
 
     window.addEventListener("keydown", (e) => {
-      if (bgMusic.current!.paused) {
-        bgMusic.current!.play();
-      }
-      console.log(e.key.toLowerCase());
+      if (bgMusic.current!.paused) bgMusic.current!.play();
       setControls(e.key.toLowerCase() as KeyMap, true);
     });
     window.addEventListener("keyup", (e) =>
@@ -108,7 +107,7 @@ const Home: NextPage = () => {
       const scoreEl = document.createElement("div");
       const label = document.createElement("div");
       const ping = document.createElement("span");
-      label.innerText = `${player.name}: ${player.score}/5`;
+      label.innerText = `${player.name}: ${player.score}/${END_GAME_SCORE}`;
       ping.className = `${styles.ping}`;
       ping.style.color = pingColourPicker(player.ping);
       ping.innerHTML = `${player.ping}ms`;
