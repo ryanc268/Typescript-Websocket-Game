@@ -4,9 +4,11 @@ import SocketIOClient, { Socket } from "socket.io-client";
 import { useEffect, useRef } from "react";
 import { ControlsInterface, Player } from "../types/gameTypes";
 import { KeyMap } from "../types/gameEnums";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home: NextPage = () => {
-  let socket: Socket = SocketIOClient();
+  let socket: Socket; //SocketIOClient();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -15,7 +17,21 @@ const Home: NextPage = () => {
   let height: number;
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
-    typeof Audio !== "undefined" ? new Audio("/coin.mp3") : undefined
+    typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
+  );
+
+  let bgMusic = useRef<HTMLAudioElement | undefined>(
+    typeof Audio !== "undefined"
+      ? new Audio("/SonicIceCapRemixLoopable.mp3")
+      : undefined
+  );
+
+  let victoryAudio = useRef<HTMLAudioElement | undefined>(
+    typeof Audio !== "undefined" ? new Audio("/victory.wav") : undefined
+  );
+
+  let defeatAudio = useRef<HTMLAudioElement | undefined>(
+    typeof Audio !== "undefined" ? new Audio("/defeat.wav") : undefined
   );
 
   const TILE_SIZE = 32;
@@ -33,9 +49,12 @@ const Home: NextPage = () => {
     const isSupported = window && window.addEventListener;
     if (!isSupported) return;
 
-    window.addEventListener("keydown", (e) =>
-      setControls(e.key as KeyMap, true)
-    );
+    window.addEventListener("keydown", (e) => {
+      if (bgMusic.current!.paused) {
+        bgMusic.current!.play();
+      }
+      setControls(e.key as KeyMap, true);
+    });
     window.addEventListener("keyup", (e) =>
       setControls(e.key as KeyMap, false)
     );
@@ -43,7 +62,13 @@ const Home: NextPage = () => {
     width = window.innerWidth;
     height = window.innerHeight;
 
-    coinAudio.current!.volume = 0.1;
+    coinAudio.current!.volume = 0.05;
+    victoryAudio.current!.volume = 0.1;
+    defeatAudio.current!.volume = 0.1;
+
+    bgMusic.current!.volume = 0.1;
+    bgMusic.current!.autoplay = true;
+    bgMusic.current!.loop = true;
 
     socketInitializer();
     const canvas = canvasRef.current;
@@ -61,6 +86,7 @@ const Home: NextPage = () => {
       window.removeEventListener("keyup", (e) =>
         setControls(e.key as KeyMap, false)
       );
+      bgMusic.current!.pause();
       socket.disconnect();
     };
   }, []);
@@ -74,10 +100,12 @@ const Home: NextPage = () => {
 
   const drawLeaderboard = () => {
     leaderboardElRef.current!.innerHTML = "Scores!";
+    const lineBreak = document.createElement("hr");
+    leaderboardElRef.current!.append(lineBreak);
     const sortedScores = [...players].sort((p1, p2) => p2.score - p1.score);
     for (const player of sortedScores) {
       const scoreEl = document.createElement("div");
-      scoreEl.innerText = `${player.name}: ${player.score}`;
+      scoreEl.innerText = `${player.name}: ${player.score}/5`;
       leaderboardElRef.current!.append(scoreEl);
     }
   };
@@ -109,16 +137,19 @@ const Home: NextPage = () => {
     }
   };
 
-  const socketInitializer = async () => {
-    await fetch("/api/socket");
+  const socketInitializer = () => {
+    fetch("/api/socket");
     socket = SocketIOClient();
 
     socket.on("connect", () => {
       console.log("Connected to the server.");
     });
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server.");
+      bgMusic.current!.pause();
+    });
 
     socket.on("map", (serverMap) => {
-      //console.log("Generating New Map!");
       map = serverMap;
     });
 
@@ -130,9 +161,44 @@ const Home: NextPage = () => {
       coins = serverCoins;
     });
 
+    socket.on("playerJoin", (player) => {
+      console.log(`showing join toast`);
+      toast(`Player ${player} joined`, {
+        position: "bottom-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    });
+    socket.on("playerLeave", (player) => {
+      console.log(`showing leave toast`);
+      toast(`Player ${player} left`, {
+        position: "bottom-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    });
+
     socket.on("playCoinSound", () => {
       coinAudio.current!.currentTime = 0;
       coinAudio.current!.play();
+    });
+    socket.on("playVictorySound", () => {
+      victoryAudio.current!.currentTime = 0;
+      victoryAudio.current!.play();
+    });
+    socket.on("playDefeatSound", () => {
+      defeatAudio.current!.currentTime = 0;
+      defeatAudio.current!.play();
     });
   };
 
@@ -223,6 +289,26 @@ const Home: NextPage = () => {
         ref={leaderboardElRef}
         className={styles.leaderboard}
       ></div>
+      <ul id="controls" className={styles.controls}>
+        <li>A = Left</li>
+        <li>D = Right</li>
+        <li>S = Fast Fall</li>
+        <li>R = Respawn</li>
+        <li>Space = Jump</li>
+      </ul>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={2000}
+        limit={5}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 };

@@ -28,23 +28,30 @@ let spaceInARow = 0;
 
 export const randomMap = () => {
   const max = Math.floor(Math.random() * 10) + 20;
+  const BLOCK_WEIGHT = Math.floor(Math.random() * 7) + 3;
+  const SPACE_WEIGHT = Math.floor(Math.random() * 25) + 30;
+  console.log(`Block`, BLOCK_WEIGHT);
+  console.log(`Space`, SPACE_WEIGHT);
   const columns = max;
   const rows = max;
   let mapArr: number[][] = [];
   for (let i = 0; i < rows; i++) {
     mapArr[i] = [];
     for (let j = 0; j < columns; j++) {
-      const tile: number = tileAlgorithm(i, j);
+      const tile: number = tileAlgorithm(i, j, BLOCK_WEIGHT, SPACE_WEIGHT);
       mapArr[i][j] = tile;
     }
   }
   return mapArr;
 };
 
-const tileAlgorithm = (i: number, j: number) => {
+const tileAlgorithm = (
+  i: number,
+  j: number,
+  BLOCK_WEIGHT: number,
+  SPACE_WEIGHT: number
+) => {
   let tile: number = 0;
-  const BLOCK_WEIGHT = 5;
-  const SPACE_WEIGHT = 35;
   if (!isSpawn(i, j)) {
     if (blockInARow > 0) {
       if (Math.floor(Math.random() * BLOCK_WEIGHT) > blockInARow) {

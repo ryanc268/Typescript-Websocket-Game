@@ -36,8 +36,6 @@ const SocketHandler = async (
     const JUMP_SPEED = -13;
     let map: number[][] = randomMap();
 
-    let mainSocket: Socket;
-
     let coins: Coin[] = [];
     let players: Player[] = [];
     const playerSocketMap: Map<String, Player> = new Map();
@@ -68,8 +66,6 @@ const SocketHandler = async (
       // }
       ipMap.set(ipAddress, true);
 
-      mainSocket = socket;
-
       sendMap(socket);
 
       const player: Player = {
@@ -84,12 +80,23 @@ const SocketHandler = async (
         jumps: { 1: true, 2: true },
       };
 
+      socketMap.forEach((value, key) => {
+        if (key !== player.id) {
+          value.emit("playerJoin", player.name);
+        }
+      });
+
       playerSocketMap.set(socket.id, player);
       socketMap.set(socket.id, socket);
       players.push(player);
 
       socket.on("disconnect", () => {
         console.log("a user disconnected");
+        socketMap.forEach((value, key) => {
+          if (key !== player.id) {
+            value.emit("playerLeave", player.name);
+          }
+        });
         ipMap.delete(ipAddress);
         playerSocketMap.delete(socket.id);
         players = players.filter((player) => player.id !== socket.id);
@@ -176,8 +183,10 @@ const SocketHandler = async (
         player.vy = 0;
       }
       coins = [];
-      //map = randomMap();
-      //sendMap(mainSocket);
+      map = randomMap();
+      socketMap.forEach((value, key) => {
+        sendMap(value);
+      });
     };
 
     const spawnCoin = () => {
@@ -208,11 +217,18 @@ const SocketHandler = async (
           ) {
             player.score++;
             coins.splice(i, 1);
-            socketMap.get(player.id)!.emit("playCoinSound");
             if (player.score >= END_GAME_SCORE) {
+              socketMap.forEach((value, key) => {
+                if (key === player.id) {
+                  value.emit("playVictorySound");
+                } else {
+                  value.emit("playDefeatSound");
+                }
+              });
               resetGame();
               return;
             }
+            socketMap.get(player.id)!.emit("playCoinSound");
           }
         }
 

@@ -1,6 +1,6 @@
 .leaderboard {
-  background: grey;
-  color: black;
+  background: #2E2E2E;
+  color: #D7D7D7;
   position: fixed;
   right: 0px;
   width: 140px;
@@ -8,4 +8,17 @@
   height: 100vh;
   padding: 10px;
   font-size: 18px;
+}
+
+.controls {
+  background: #2E2E2E;
+  color: #D7D7D7;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  padding: 10px;
+  margin: 0px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 10px;
 }
