@@ -12,7 +12,12 @@ import {
   Rect,
 } from "../../global/types/gameTypes";
 import { mainMap, randomMap } from "../../maps/maps";
-import { TILE_SIZE, PLAYER_SIZE, COIN_SIZE, END_GAME_SCORE } from "../../global/constants";
+import {
+  TILE_SIZE,
+  PLAYER_SIZE,
+  COIN_SIZE,
+  END_GAME_SCORE,
+} from "../../global/constants";
 const random = require("random-name");
 
 const SocketHandler = async (
