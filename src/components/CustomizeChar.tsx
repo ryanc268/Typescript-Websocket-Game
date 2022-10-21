@@ -35,7 +35,7 @@ const CustomizeChar: React.FC<CustomizeCharProps> = ({
           onSubmit={handleSubmit}
         >
           <h2 className="py-4 text-center text-4xl font-bold">
-            Ryan's Cube Game
+            Ryans Cube Game
           </h2>
           <div className="mb-4 flex flex-col">
             <label>Username</label>
