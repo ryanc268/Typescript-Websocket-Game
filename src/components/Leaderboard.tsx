@@ -1,26 +1,27 @@
 //TODO: Fix this to not crash the game
 
-import { useEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useRef } from "react";
 import { END_GAME_SCORE } from "../global/constants";
 import { Player } from "../global/types/gameTypes";
 import styles from "../styles/Home.module.css";
 
 interface LeaderboardProps {
-  players2: Player[];
+  players: MutableRefObject<Player[]>;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ players2 }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
-  // useEffect(() => {
-  //   setInterval(drawLeaderboard, 2000);
-  //   drawLeaderboard();
-  //   console.log("Leaderboard trigger");
-  // }, []);
+  useEffect(() => {
+    setInterval(drawLeaderboard, 2000);
+    drawLeaderboard();
+  }, []);
 
   const drawLeaderboard = () => {
     leaderboardElRef.current!.innerHTML = "";
-    const sortedScores = [...players2].sort((p1, p2) => p2.score - p1.score);
+    const sortedScores = [...players.current].sort(
+      (p1, p2) => p2.score - p1.score
+    );
     for (const player of sortedScores) {
       const scoreEl = document.createElement("div");
       const label = document.createElement("div");

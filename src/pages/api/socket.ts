@@ -273,6 +273,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
             }
           }
 
+          //The higher vy is, the more gravity downwards you have
           player.vy += playerControls.down
             ? GRAVITY * delta * 4
             : GRAVITY * delta;

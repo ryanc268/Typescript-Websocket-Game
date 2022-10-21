@@ -4,14 +4,9 @@ import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  TILE_SIZE,
-  COIN_SIZE,
-  PLAYER_SIZE,
-  END_GAME_SCORE,
-} from "../global/constants";
-import styles from "../styles/Home.module.css";
+import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
+import Leaderboard from "./Leaderboard";
 
 interface GameBoardProps {
   name: string;
@@ -24,9 +19,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
-  //let [players2, setPlayers2] = useState<Player[]>([]);
-
-  let players: Player[] = [];
+  let players = useRef<Player[]>([]);
 
   let width: number;
   let height: number;
@@ -58,8 +51,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   useEffect((): any => {
     const isSupported = window && window.addEventListener;
     if (!isSupported) return;
-
-    console.log(name, "connected");
 
     window.addEventListener("keydown", (e) => {
       if (bgMusic.current!.paused) bgMusic.current!.play();
@@ -115,8 +106,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
 
   const startCanvas = () => {
     contextRef.current!.fillStyle = "red";
-    drawLeaderboard();
-    setInterval(drawLeaderboard, 2000);
+    // drawLeaderboard();
+    // setInterval(drawLeaderboard, 2000);
     window.requestAnimationFrame(loop);
   };
 
@@ -169,8 +160,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     });
 
     socket.on("players", (serverPlayers) => {
-      //setPlayers2(serverPlayers);
-      players = serverPlayers;
+      players.current = serverPlayers;
     });
 
     socket.on("coins", (serverCoins) => {
@@ -229,7 +219,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     let cx = 0;
     let cy = 0;
 
-    const playerToFocus = players.find(
+    const playerToFocus = players.current.find(
       (player: Player) => player.id === socket.id
     );
 
@@ -262,7 +252,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
       );
     }
 
-    for (let player of players) {
+    for (let player of players.current) {
       if (player.id === socket.id) {
         contextRef.current!.fillStyle = "#ff0000";
         contextRef.current!.fillRect(
@@ -299,58 +289,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     window.requestAnimationFrame(loop);
   }
 
-  //Leaderboard code to be moved out
-
-  const drawLeaderboard = () => {
-    leaderboardElRef.current!.innerHTML = "";
-    const sortedScores = [...players].sort((p1, p2) => p2.score - p1.score);
-    for (const player of sortedScores) {
-      const scoreEl = document.createElement("div");
-      const label = document.createElement("div");
-      const ping = document.createElement("span");
-      label.innerText = `${player.name}: ${player.score}/${END_GAME_SCORE}`;
-      ping.className = `${styles.ping}`;
-      ping.style.color = pingColourPicker(player.ping);
-      ping.innerHTML = `${player.ping}ms`;
-      scoreEl.append(label);
-      scoreEl.append(ping);
-      leaderboardElRef.current!.append(scoreEl);
-    }
-  };
-
-  const pingColourPicker = (ping: number) => {
-    switch (true) {
-      case ping < 70:
-        return "#186e1f";
-      case ping < 110:
-        return "#2ac237";
-      case ping < 160:
-        return "#d0f05d";
-      case ping < 210:
-        return "#e7ba3e";
-      case ping < 260:
-        return "#e6873b";
-      case ping >= 260:
-        return "#aa3229";
-      default:
-        return "#186e1f";
-    }
-  };
-
-  const LeaderboardComponent: React.FC = () => {
-    return (
-      <div className="fixed right-0 top-0 h-full w-48 space-y-1 bg-zinc-800 p-3 text-base text-gray-300">
-        <h1 className="text-2xl font-bold text-slate-300">Scoreboard</h1>
-        <hr />
-        <div id="leaderboard" ref={leaderboardElRef}></div>
-      </div>
-    );
-  };
-
   return (
     <div>
       <canvas className=" bg-zinc-900" id="canvas" ref={canvasRef}></canvas>
-      <LeaderboardComponent />
+      {/* <LeaderboardComponent /> */}
+      <Leaderboard players={players} />
       <Controls />
       <ToastContainer
         position="bottom-left"
