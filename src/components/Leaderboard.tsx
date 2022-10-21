@@ -12,11 +12,11 @@ interface LeaderboardProps {
 const Leaderboard: React.FC<LeaderboardProps> = ({ players2 }) => {
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    setInterval(drawLeaderboard, 2000);
-    drawLeaderboard();
-    console.log("Leaderboard trigger");
-  }, []);
+  // useEffect(() => {
+  //   setInterval(drawLeaderboard, 2000);
+  //   drawLeaderboard();
+  //   console.log("Leaderboard trigger");
+  // }, []);
 
   const drawLeaderboard = () => {
     leaderboardElRef.current!.innerHTML = "";
