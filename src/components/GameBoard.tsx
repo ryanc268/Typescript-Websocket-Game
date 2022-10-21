@@ -17,7 +17,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let socket: Socket; //SocketIOClient();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
   let players = useRef<Player[]>([]);
 
@@ -152,7 +151,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     socket.on("disconnect", () => {
       console.log("Disconnected from the server.");
       bgMusic.current!.pause();
-      //setIsCustomized(false);
+      setIsCustomized(false);
     });
 
     socket.on("map", (serverMap) => {

@@ -13,8 +13,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setInterval(drawLeaderboard, 2000);
+    const interval = setInterval(drawLeaderboard, 2000);
     drawLeaderboard();
+    return () => window.clearInterval(interval);
   }, []);
 
   const drawLeaderboard = () => {
