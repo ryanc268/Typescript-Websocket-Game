@@ -1,32 +1,6 @@
-.leaderboard {
-  background: #2E2E2E;
-  color: #D7D7D7;
-  position: fixed;
-  right: 0px;
-  width: 140px;
-  top: 0px;
-  height: 100vh;
-  padding: 10px;
-  font-size: 18px;
-}
-
 .ping {
   padding: 0px;
   margin: 0px;
   display: flex;
   font-size: 12px;
-}
-
-.controls {
-  background: #2E2E2E;
-  color: #D7D7D7;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  padding: 10px;
-  margin: 0px;
-  font-size: 15px;
-  font-weight: bold;
-  border-radius: 10px;
-  list-style-type: none;
 }

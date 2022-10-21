@@ -7,7 +7,6 @@ import {
   Coin,
   Collidable,
   ControlsInterface,
-  Jumps,
   Player,
   Rect,
 } from "../../global/types/gameTypes";
@@ -20,10 +19,7 @@ import {
 } from "../../global/constants";
 const random = require("random-name");
 
-const SocketHandler = async (
-  req: NextApiRequest,
-  res: NextApiResponseServerIO
-) => {
+const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (!res.socket.server.io) {
     console.log("New Socket Server initializing...");
 
@@ -54,7 +50,8 @@ const SocketHandler = async (
     };
 
     io.on("connection", (socket: Socket) => {
-      console.log(`Player connected`);
+      const playerName = socket.handshake.query.name ?? random.first();
+      console.log(`Player ${playerName} connected`);
 
       const ipAddress =
         socket.handshake.headers["x-forwarded-for"] ??
@@ -76,22 +73,15 @@ const SocketHandler = async (
         vx: 0,
         vy: 0,
         score: 0,
-        name: random.first(),
+        name: playerName,
         id: socket.id,
         colour: `#${Math.floor(Math.random() * (0xffffff + 1)).toString(16)}`,
         jumps: { 1: true, 2: true },
         ping: 0,
       };
 
-      setInterval(() => {
-        socketMap.forEach((value, key) => {
-          const start = Date.now();
-          value.emit("ping", () => {
-            const duration = Date.now() - start;
-            playerSocketMap.get(key)!.ping = duration;
-          });
-        });
-      }, 5000);
+      ping();
+      setInterval(() => ping(), 5000);
 
       socketMap.forEach((value, key) => {
         if (key !== player.id) {
@@ -104,7 +94,7 @@ const SocketHandler = async (
       players.push(player);
 
       socket.on("disconnect", () => {
-        console.log("a user disconnected");
+        console.log(`${player.name} disconnected`);
         socketMap.forEach((value, key) => {
           if (key !== player.id) {
             value.emit("playerLeave", player.name);
@@ -119,6 +109,16 @@ const SocketHandler = async (
         controlsMap.set(socket.id, controls);
       });
     });
+
+    const ping = () => {
+      socketMap.forEach((value, key) => {
+        const start = Date.now();
+        value.emit("ping", () => {
+          const duration = Date.now() - start;
+          playerSocketMap.get(key)!.ping = duration;
+        });
+      });
+    };
 
     const collidables = (): Collidable[] => {
       const collisions: Collidable[] = [];
@@ -249,6 +249,7 @@ const SocketHandler = async (
           if (playerControls.respawn) {
             player.x = 100;
             player.y = 100;
+            player.vy = 0;
           }
           if (playerControls.right) {
             player.x += playerControls.sprint
@@ -277,6 +278,7 @@ const SocketHandler = async (
             : GRAVITY * delta;
           player.y += player.vy;
 
+          //Landing on terrain after a jump
           if (isCollidingWithMap(player)) {
             if (player.vy > 0) {
               player.jumps = { 1: true, 2: true };
