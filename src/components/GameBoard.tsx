@@ -8,11 +8,6 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
-import coin from "./../../public/img/coin.png";
-import block from "./../../public/img/block.png";
-import block1 from "./../../public/img/block2.png";
-import block2 from "./../../public/img/block3.png";
-import block3 from "./../../public/img/block4.png";
 
 interface GameBoardProps {
   name: string;
@@ -22,7 +17,7 @@ interface GameBoardProps {
 const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let socket: Socket; //SocketIOClient();
   let coinImg = new Image();
-  coinImg.src = coin.src;
+  coinImg.src = "/img/coin.png";
   let blockImg = new Image();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -254,15 +249,15 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     const blockChoice = Math.floor(Math.random() * 4);
     switch (blockChoice) {
       case 0:
-        return block.src;
+        return "/img/block.png";
       case 1:
-        return block1.src;
+        return "/img/block2.png";
       case 2:
-        return block2.src;
+        return "/img/block3.png";
       case 3:
-        return block3.src;
+        return "/img/block4.png";
       default:
-        return block.src;
+        return "/img/block.png";
     }
   };
 
