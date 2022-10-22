@@ -16,6 +16,18 @@ interface GameBoardProps {
 
 const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let socket: Socket; //SocketIOClient();
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  let players = useRef<Player[]>([]);
+
+  let roundTransition = useRef<boolean>(false);
+  let [loadScreenState, setLoadScreenState] = useState<boolean>(false);
+
+  let width: number;
+  let height: number;
+
   let coinImg = new Image();
   coinImg.src = "/img/coin.png";
 
@@ -29,17 +41,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   blockImg3.src = "/img/block3.png";
   let blockImg4 = new Image();
   blockImg4.src = "/img/block4.png";
-
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-
-  let players = useRef<Player[]>([]);
-
-  let roundTransition = useRef<boolean>(false);
-  let [loadScreenState, setLoadScreenState] = useState<boolean>(false);
-
-  let width: number;
-  let height: number;
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -292,41 +293,45 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }
 
     contextRef.current!.fillStyle = "#7ca6e4";
-    for (let row = 0; row < map.length; row++) {
-      for (let col = 0; col < map[row].length; col++) {
-        const tileType = map[row][col];
-        if (tileType === 1) {
-          contextRef.current!.drawImage(
-            blockImg,
-            col * TILE_SIZE - cx,
-            row * TILE_SIZE - cy,
-            TILE_SIZE,
-            TILE_SIZE
-          );
-          // contextRef.current!.fillRect(
-          //   col * TILE_SIZE - cx,
-          //   row * TILE_SIZE - cy,
-          //   TILE_SIZE,
-          //   TILE_SIZE
-          // );
+    if (blockImg) {
+      for (let row = 0; row < map.length; row++) {
+        for (let col = 0; col < map[row].length; col++) {
+          const tileType = map[row][col];
+          if (tileType === 1) {
+            contextRef.current!.drawImage(
+              blockImg,
+              col * TILE_SIZE - cx,
+              row * TILE_SIZE - cy,
+              TILE_SIZE,
+              TILE_SIZE
+            );
+            // contextRef.current!.fillRect(
+            //   col * TILE_SIZE - cx,
+            //   row * TILE_SIZE - cy,
+            //   TILE_SIZE,
+            //   TILE_SIZE
+            // );
+          }
         }
       }
     }
-    for (const coin of coins) {
-      contextRef.current!.drawImage(
-        coinImg,
-        coin.x - cx,
-        coin.y - cy,
-        COIN_SIZE,
-        COIN_SIZE
-      );
-      // contextRef.current!.fillStyle = "#d4ba22";
-      // contextRef.current!.fillRect(
-      //   coin.x - cx,
-      //   coin.y - cy,
-      //   COIN_SIZE,
-      //   COIN_SIZE
-      // );
+    if (coinImg) {
+      for (const coin of coins) {
+        contextRef.current!.drawImage(
+          coinImg,
+          coin.x - cx,
+          coin.y - cy,
+          COIN_SIZE,
+          COIN_SIZE
+        );
+        // contextRef.current!.fillStyle = "#d4ba22";
+        // contextRef.current!.fillRect(
+        //   coin.x - cx,
+        //   coin.y - cy,
+        //   COIN_SIZE,
+        //   COIN_SIZE
+        // );
+      }
     }
 
     for (let player of players.current) {
