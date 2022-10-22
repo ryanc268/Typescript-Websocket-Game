@@ -293,7 +293,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }
 
     contextRef.current!.fillStyle = "#7ca6e4";
-    if (blockImg) {
+    if (blockImg.complete) {
       for (let row = 0; row < map.length; row++) {
         for (let col = 0; col < map[row].length; col++) {
           const tileType = map[row][col];
@@ -315,7 +315,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
         }
       }
     }
-    if (coinImg) {
+    if (coinImg.complete) {
       for (const coin of coins) {
         contextRef.current!.drawImage(
           coinImg,
