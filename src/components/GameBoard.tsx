@@ -8,11 +8,11 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
-import coin from "../../public/img/coin.png";
-import block from "../../public/img/block.png";
-import block1 from "../../public/img/block2.png";
-import block2 from "../../public/img/block3.png";
-import block3 from "../../public/img/block4.png";
+import coin from "./../../public/img/coin.png";
+import block from "./../../public/img/block.png";
+import block1 from "./../../public/img/block2.png";
+import block2 from "./../../public/img/block3.png";
+import block3 from "./../../public/img/block4.png";
 
 interface GameBoardProps {
   name: string;
