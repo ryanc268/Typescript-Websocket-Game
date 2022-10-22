@@ -1,5 +1,7 @@
 ideas
 
+- FIX IMAGE LOADING FOR MAPS
+
 - customize your square
 - limit of players
 - vertical scrolling scoreboard

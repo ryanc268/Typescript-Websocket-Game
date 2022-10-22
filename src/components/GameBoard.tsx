@@ -28,19 +28,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let width: number;
   let height: number;
 
-  let coinImg = new Image();
-  coinImg.src = "/img/coin.png";
+  // let coinImg = new Image();
+  // coinImg.src = "/img/coin.png";
 
-  let blockImg = new Image();
+  // let blockImg: HTMLImageElement;
 
-  let blockImg1 = new Image();
-  blockImg1.src = "/img/block.png";
-  let blockImg2 = new Image();
-  blockImg2.src = "/img/block2.png";
-  let blockImg3 = new Image();
-  blockImg3.src = "/img/block3.png";
-  let blockImg4 = new Image();
-  blockImg4.src = "/img/block4.png";
+  // let blockImg1 = new Image();
+  // blockImg1.src = "/img/block.png";
+  // let blockImg2 = new Image();
+  // blockImg2.src = "/img/block2.png";
+  // let blockImg3 = new Image();
+  // blockImg3.src = "/img/block3.png";
+  // let blockImg4 = new Image();
+  // blockImg4.src = "/img/block4.png";
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -95,7 +95,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     bgMusic.current!.autoplay = true;
     bgMusic.current!.loop = true;
 
-    blockImg = blockChange();
+    //blockImg = blockChange();
 
     socketInitializer();
     const canvas = canvasRef.current;
@@ -249,7 +249,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
       (v) => (controls[v as keyof ControlsInterface] = false)
     );
     socket.emit("controls", controls);
-    blockImg = blockChange();
+    // blockImg = blockChange();
     const roundChange = setInterval(() => {
       setLoadScreenState(false);
       roundTransition.current = false;
@@ -257,21 +257,21 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }, 2000);
   };
 
-  const blockChange = () => {
-    const blockChoice = Math.floor(Math.random() * 4);
-    switch (blockChoice) {
-      case 0:
-        return blockImg1;
-      case 1:
-        return blockImg2;
-      case 2:
-        return blockImg3;
-      case 3:
-        return blockImg4;
-      default:
-        return blockImg1;
-    }
-  };
+  // const blockChange = () => {
+  //   const blockChoice = Math.floor(Math.random() * 4);
+  //   switch (blockChoice) {
+  //     case 0:
+  //       return blockImg1;
+  //     case 1:
+  //       return blockImg2;
+  //     case 2:
+  //       return blockImg3;
+  //     case 3:
+  //       return blockImg4;
+  //     default:
+  //       return blockImg1;
+  //   }
+  // };
 
   function update() {
     if (!roundTransition.current) socket.emit("controls", controls);
@@ -293,45 +293,41 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }
 
     contextRef.current!.fillStyle = "#7ca6e4";
-    if (blockImg.complete) {
-      for (let row = 0; row < map.length; row++) {
-        for (let col = 0; col < map[row].length; col++) {
-          const tileType = map[row][col];
-          if (tileType === 1) {
-            contextRef.current!.drawImage(
-              blockImg,
-              col * TILE_SIZE - cx,
-              row * TILE_SIZE - cy,
-              TILE_SIZE,
-              TILE_SIZE
-            );
-            // contextRef.current!.fillRect(
-            //   col * TILE_SIZE - cx,
-            //   row * TILE_SIZE - cy,
-            //   TILE_SIZE,
-            //   TILE_SIZE
-            // );
-          }
+    for (let row = 0; row < map.length; row++) {
+      for (let col = 0; col < map[row].length; col++) {
+        const tileType = map[row][col];
+        if (tileType === 1) {
+          // contextRef.current!.drawImage(
+          //   blockImg,
+          //   col * TILE_SIZE - cx,
+          //   row * TILE_SIZE - cy,
+          //   TILE_SIZE,
+          //   TILE_SIZE
+          // );
+          contextRef.current!.fillRect(
+            col * TILE_SIZE - cx,
+            row * TILE_SIZE - cy,
+            TILE_SIZE,
+            TILE_SIZE
+          );
         }
       }
     }
-    if (coinImg.complete) {
-      for (const coin of coins) {
-        contextRef.current!.drawImage(
-          coinImg,
-          coin.x - cx,
-          coin.y - cy,
-          COIN_SIZE,
-          COIN_SIZE
-        );
-        // contextRef.current!.fillStyle = "#d4ba22";
-        // contextRef.current!.fillRect(
-        //   coin.x - cx,
-        //   coin.y - cy,
-        //   COIN_SIZE,
-        //   COIN_SIZE
-        // );
-      }
+    contextRef.current!.fillStyle = "#d4ba22";
+    for (const coin of coins) {
+      // contextRef.current!.drawImage(
+      //   coinImg,
+      //   coin.x - cx,
+      //   coin.y - cy,
+      //   COIN_SIZE,
+      //   COIN_SIZE
+      // );
+      contextRef.current!.fillRect(
+        coin.x - cx,
+        coin.y - cy,
+        COIN_SIZE,
+        COIN_SIZE
+      );
     }
 
     for (let player of players.current) {
