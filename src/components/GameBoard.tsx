@@ -18,7 +18,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let socket: Socket; //SocketIOClient();
   let coinImg = new Image();
   coinImg.src = "/img/coin.png";
+
   let blockImg = new Image();
+
+  let blockImg1 = new Image();
+  blockImg1.src = "/img/block.png";
+  let blockImg2 = new Image();
+  blockImg2.src = "/img/block2.png";
+  let blockImg3 = new Image();
+  blockImg3.src = "/img/block3.png";
+  let blockImg4 = new Image();
+  blockImg4.src = "/img/block4.png";
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -83,7 +94,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     bgMusic.current!.autoplay = true;
     bgMusic.current!.loop = true;
 
-    blockImg.src = blockChange();
+    blockImg = blockChange();
 
     socketInitializer();
     const canvas = canvasRef.current;
@@ -237,7 +248,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
       (v) => (controls[v as keyof ControlsInterface] = false)
     );
     socket.emit("controls", controls);
-    blockImg.src = blockChange();
+    blockImg = blockChange();
     const roundChange = setInterval(() => {
       setLoadScreenState(false);
       roundTransition.current = false;
@@ -249,15 +260,15 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     const blockChoice = Math.floor(Math.random() * 4);
     switch (blockChoice) {
       case 0:
-        return "/img/block.png";
+        return blockImg1;
       case 1:
-        return "/img/block2.png";
+        return blockImg2;
       case 2:
-        return "/img/block3.png";
+        return blockImg3;
       case 3:
-        return "/img/block4.png";
+        return blockImg4;
       default:
-        return "/img/block.png";
+        return blockImg1;
     }
   };
 
