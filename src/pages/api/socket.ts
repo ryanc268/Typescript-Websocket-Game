@@ -28,7 +28,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
     const TICK_RATE = 40;
     //Higher = faster
     const PLAYER_SPEED = 9.0;
-    const COIN_SPAWN_RATE = 1250;
+    const COIN_SPAWN_RATE = 1500;
     const MAX_COINS = 10;
     //Lower = faster
     const JUMP_SPEED = -13;
@@ -233,9 +233,9 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
             if (player.score >= END_GAME_SCORE) {
               socketMap.forEach((value, key) => {
                 if (key === player.id) {
-                  value.emit("playVictorySound");
+                  value.emit("playVictorySound", "You are");
                 } else {
-                  value.emit("playDefeatSound");
+                  value.emit("playDefeatSound", `${player.name} is`);
                 }
               });
               resetGame();
