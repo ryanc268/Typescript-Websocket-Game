@@ -15,19 +15,13 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
-import { useLoadAssets } from "../scripts/loadAssets";
 
 interface GameBoardProps {
   name: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
-  imageSrcs: MutableRefObject<string[]>;
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({
-  name,
-  setIsCustomized,
-  imageSrcs,
-}) => {
+const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let socket: Socket; //SocketIOClient();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -41,17 +35,25 @@ const GameBoard: React.FC<GameBoardProps> = ({
   let width: number;
   let height: number;
 
+  const imageSrcs: string[] = [
+    "/img/coin.png",
+    "/img/block.png",
+    "/img/block2.png",
+    "/img/block3.png",
+    "/img/block4.png",
+  ];
+
   let coinImg = new Image();
-  coinImg.src = imageSrcs.current[0];
+  coinImg.src = imageSrcs[0];
 
   let blockImg1 = new Image();
-  blockImg1.src = imageSrcs.current[1];
+  blockImg1.src = imageSrcs[1];
   let blockImg2 = new Image();
-  blockImg2.src = imageSrcs.current[2];
+  blockImg2.src = imageSrcs[2];
   let blockImg3 = new Image();
-  blockImg3.src = imageSrcs.current[3];
+  blockImg3.src = imageSrcs[3];
   let blockImg4 = new Image();
-  blockImg4.src = imageSrcs.current[4];
+  blockImg4.src = imageSrcs[4];
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
