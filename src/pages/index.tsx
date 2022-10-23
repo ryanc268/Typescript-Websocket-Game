@@ -13,11 +13,11 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const imgs: string[] = [
-      "/img/coin.png",
-      "/img/block.png",
-      "/img/block2.png",
-      "/img/block3.png",
-      "/img/block4.png",
+      "/img/coin.PNG",
+      "/img/block.PNG",
+      "/img/block2.PNG",
+      "/img/block3.PNG",
+      "/img/block4.PNG",
     ];
     cacheImages(imgs);
   }, []);
