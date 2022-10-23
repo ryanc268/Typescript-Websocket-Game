@@ -1,5 +1,12 @@
 import SocketIOClient, { Socket } from "socket.io-client";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,9 +20,14 @@ import { useLoadAssets } from "../scripts/loadAssets";
 interface GameBoardProps {
   name: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
+  imageSrcs: MutableRefObject<string[]>;
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
+const GameBoard: React.FC<GameBoardProps> = ({
+  name,
+  setIsCustomized,
+  imageSrcs,
+}) => {
   let socket: Socket; //SocketIOClient();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -30,19 +42,16 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let height: number;
 
   let coinImg = new Image();
-  coinImg.src = useLoadAssets("", "/img/coin.png");
-  coinImg.src = "/img/coin.png";
-
-  //let blockImg: HTMLImageElement;
+  coinImg.src = imageSrcs.current[0];
 
   let blockImg1 = new Image();
-  blockImg1.src = "/img/block.png";
+  blockImg1.src = imageSrcs.current[1];
   let blockImg2 = new Image();
-  blockImg2.src = "/img/block2.png";
+  blockImg2.src = imageSrcs.current[2];
   let blockImg3 = new Image();
-  blockImg3.src = "/img/block3.png";
+  blockImg3.src = imageSrcs.current[3];
   let blockImg4 = new Image();
-  blockImg4.src = "/img/block4.png";
+  blockImg4.src = imageSrcs.current[4];
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -299,19 +308,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
       for (let col = 0; col < map[row].length; col++) {
         const tileType = map[row][col];
         if (tileType === 1) {
-          // contextRef.current!.drawImage(
-          //   blockImg,
-          //   col * TILE_SIZE - cx,
-          //   row * TILE_SIZE - cy,
-          //   TILE_SIZE,
-          //   TILE_SIZE
-          // );
-          contextRef.current!.fillRect(
+          contextRef.current!.drawImage(
+            blockImg1,
             col * TILE_SIZE - cx,
             row * TILE_SIZE - cy,
             TILE_SIZE,
             TILE_SIZE
           );
+          // contextRef.current!.fillRect(
+          //   col * TILE_SIZE - cx,
+          //   row * TILE_SIZE - cy,
+          //   TILE_SIZE,
+          //   TILE_SIZE
+          // );
         }
       }
     }
