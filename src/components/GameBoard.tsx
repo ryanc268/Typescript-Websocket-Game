@@ -8,6 +8,7 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
+import loadAssets from "../scripts/loadAssets";
 
 interface GameBoardProps {
   name: string;
@@ -28,19 +29,20 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let width: number;
   let height: number;
 
-  // let coinImg = new Image();
-  // coinImg.src = "/img/coin.png";
+  let coinImg = new Image();
+  coinImg.src = loadAssets("", "/img/coin.png");
+  coinImg.src = "/img/coin.png";
 
-  // let blockImg: HTMLImageElement;
+  //let blockImg: HTMLImageElement;
 
-  // let blockImg1 = new Image();
-  // blockImg1.src = "/img/block.png";
-  // let blockImg2 = new Image();
-  // blockImg2.src = "/img/block2.png";
-  // let blockImg3 = new Image();
-  // blockImg3.src = "/img/block3.png";
-  // let blockImg4 = new Image();
-  // blockImg4.src = "/img/block4.png";
+  let blockImg1 = new Image();
+  blockImg1.src = "/img/block.png";
+  let blockImg2 = new Image();
+  blockImg2.src = "/img/block2.png";
+  let blockImg3 = new Image();
+  blockImg3.src = "/img/block3.png";
+  let blockImg4 = new Image();
+  blockImg4.src = "/img/block4.png";
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -315,19 +317,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }
     contextRef.current!.fillStyle = "#d4ba22";
     for (const coin of coins) {
-      // contextRef.current!.drawImage(
-      //   coinImg,
-      //   coin.x - cx,
-      //   coin.y - cy,
-      //   COIN_SIZE,
-      //   COIN_SIZE
-      // );
-      contextRef.current!.fillRect(
+      contextRef.current!.drawImage(
+        coinImg,
         coin.x - cx,
         coin.y - cy,
         COIN_SIZE,
         COIN_SIZE
       );
+      // contextRef.current!.fillRect(
+      //   coin.x - cx,
+      //   coin.y - cy,
+      //   COIN_SIZE,
+      //   COIN_SIZE
+      // );
     }
 
     for (let player of players.current) {
