@@ -29,16 +29,16 @@ const Home: NextPage = () => {
 
         img.src = src;
         img.onload = resolve;
-        img.onerror = function () {
-          console.log("rejected ", img.src);
-          console.log("promise", promises[index]);
-          return reject;
-        };
+        img.onerror = reject;
       });
     });
     console.log("Waiting for promises...");
 
-    await Promise.all(promises);
+    await Promise.allSettled(promises);
+
+    console.log("promises", promises);
+
+    //await Promise.all(promises);
 
     //imageSrcs.current = srcArray;
     console.log("All promises awaited");
