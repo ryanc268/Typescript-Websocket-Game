@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const loadAssets = (initialSrc: string, currentSrc: string) => {
+export const useLoadAssets = (initialSrc: string, currentSrc: string) => {
   const [imageSrc, _setImageSrc] = useState(initialSrc);
 
   useEffect(() => {
@@ -14,4 +14,4 @@ export const loadAssets = (initialSrc: string, currentSrc: string) => {
   return imageSrc;
 };
 
-export default loadAssets;
+export default useLoadAssets;

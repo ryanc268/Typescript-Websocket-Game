@@ -8,7 +8,7 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
-import loadAssets from "../scripts/loadAssets";
+import { useLoadAssets } from "../scripts/loadAssets";
 
 interface GameBoardProps {
   name: string;
@@ -30,7 +30,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let height: number;
 
   let coinImg = new Image();
-  coinImg.src = loadAssets("", "/img/coin.png");
+  coinImg.src = useLoadAssets("", "/img/coin.png");
   coinImg.src = "/img/coin.png";
 
   //let blockImg: HTMLImageElement;
