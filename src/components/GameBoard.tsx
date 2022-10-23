@@ -19,9 +19,14 @@ import LoadingScreen from "./LoadingScreen";
 interface GameBoardProps {
   name: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
+  imageSrcs: MutableRefObject<string[]>;
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
+const GameBoard: React.FC<GameBoardProps> = ({
+  name,
+  setIsCustomized,
+  imageSrcs,
+}) => {
   let socket: Socket; //SocketIOClient();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -35,25 +40,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
   let width: number;
   let height: number;
 
-  const imageSrcs: string[] = [
-    "/img/coin.PNG",
-    "/img/block.PNG",
-    "/img/block2.PNG",
-    "/img/block3.PNG",
-    "/img/block4.PNG",
-  ];
-
   let coinImg = new Image();
-  coinImg.src = imageSrcs[0];
+  coinImg.src = imageSrcs.current[0];
 
-  let blockImg1 = new Image();
-  blockImg1.src = imageSrcs[1];
-  let blockImg2 = new Image();
-  blockImg2.src = imageSrcs[2];
-  let blockImg3 = new Image();
-  blockImg3.src = imageSrcs[3];
-  let blockImg4 = new Image();
-  blockImg4.src = imageSrcs[4];
+  let currentBlock: HTMLImageElement;
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -108,7 +98,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     bgMusic.current!.autoplay = true;
     bgMusic.current!.loop = true;
 
-    //blockImg = blockChange();
+    currentBlock = blockChange();
 
     socketInitializer();
     const canvas = canvasRef.current;
@@ -139,8 +129,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
 
   const startCanvas = () => {
     contextRef.current!.fillStyle = "red";
-    // drawLeaderboard();
-    // setInterval(drawLeaderboard, 2000);
     window.requestAnimationFrame(loop);
   };
 
@@ -262,7 +250,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
       (v) => (controls[v as keyof ControlsInterface] = false)
     );
     socket.emit("controls", controls);
-    // blockImg = blockChange();
+    currentBlock = blockChange();
     const roundChange = setInterval(() => {
       setLoadScreenState(false);
       roundTransition.current = false;
@@ -270,21 +258,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
     }, 2000);
   };
 
-  // const blockChange = () => {
-  //   const blockChoice = Math.floor(Math.random() * 4);
-  //   switch (blockChoice) {
-  //     case 0:
-  //       return blockImg1;
-  //     case 1:
-  //       return blockImg2;
-  //     case 2:
-  //       return blockImg3;
-  //     case 3:
-  //       return blockImg4;
-  //     default:
-  //       return blockImg1;
-  //   }
-  // };
+  const blockChange = () => {
+    const blockChoice = Math.floor(Math.random() * 4) + 1;
+    const block = new Image();
+    //will need to be careful with this since doing it this way assume I know what is being loaded into each array slot
+    block.src = imageSrcs.current[blockChoice];
+    return block;
+  };
 
   function update() {
     if (!roundTransition.current) socket.emit("controls", controls);
@@ -311,7 +291,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ name, setIsCustomized }) => {
         const tileType = map[row][col];
         if (tileType === 1) {
           contextRef.current!.drawImage(
-            blockImg1,
+            currentBlock,
             col * TILE_SIZE - cx,
             row * TILE_SIZE - cy,
             TILE_SIZE,

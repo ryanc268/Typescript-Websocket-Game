@@ -9,40 +9,32 @@ const Home: NextPage = () => {
   const [name, setName] = useState<string>("");
   const [isPreLoading, setIsPreLoading] = useState<boolean>(true);
 
-  //let imageSrcs = useRef<string[]>([]);
+  let imageSrcs = useRef<string[]>([]);
 
   useEffect(() => {
     const imgs: string[] = [
-      "/img/coin.PNG",
-      "/img/block.PNG",
-      "/img/block2.PNG",
-      "/img/block3.PNG",
-      "/img/block4.PNG",
+      "/img/coin.png",
+      "/img/block.png",
+      "/img/block2.png",
+      "/img/block3.png",
+      "/img/block4.png",
     ];
     cacheImages(imgs);
   }, []);
 
   const cacheImages = async (srcArray: string[]) => {
-    const promises = await srcArray.map((src, index) => {
+    const promises = await srcArray.map((src) => {
       return new Promise(function (resolve, reject) {
         const img = new Image();
-
         img.src = src;
         img.onload = resolve;
         img.onerror = reject;
       });
     });
-    console.log("Waiting for promises...");
 
-    await Promise.allSettled(promises);
+    await Promise.all(promises);
 
-    console.log("promises", promises);
-
-    //await Promise.all(promises);
-
-    //imageSrcs.current = srcArray;
-    console.log("All promises awaited");
-
+    imageSrcs.current = srcArray;
     setIsPreLoading(false);
   };
 
@@ -53,7 +45,11 @@ const Home: NextPage = () => {
       ) : isPreLoading ? (
         <LoadingScreen />
       ) : (
-        <GameBoard name={name} setIsCustomized={setIsCustomized} />
+        <GameBoard
+          name={name}
+          setIsCustomized={setIsCustomized}
+          imageSrcs={imageSrcs}
+        />
       )}
     </div>
   );
