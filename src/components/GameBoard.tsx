@@ -15,6 +15,7 @@ import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
+import MobileControls from "./MobileControls";
 
 interface GameBoardProps {
   name: string;
@@ -34,7 +35,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
+  const [mobileControls, setMobileControls] = useState<Map<KeyMap, boolean>>(
+    new Map()
+  );
+
+  let controlsRef = useRef<ControlsInterface>({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    jump: false,
+    respawn: false,
+    sprint: false,
+  });
+
   let players = useRef<Player[]>([]);
+  let currentPlayer = useRef<Player>();
 
   let roundTransition = useRef<boolean>(false);
   let [loadScreenState, setLoadScreenState] = useState<boolean>(false);
@@ -127,22 +143,34 @@ const GameBoard: React.FC<GameBoardProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    mobileControls.forEach((value, key) => {
+      if (bgMusic.current!.paused) bgMusic.current!.play();
+      console.log("Control", key, value);
+      setControls(key, value);
+      if (key === KeyMap.Jump) {
+        const resetJump = setInterval(() => {
+          setControls(key, false);
+          window.clearInterval(resetJump);
+        }, 100);
+      }
+      if (key === KeyMap.Respawn) {
+        const resetJump = setInterval(() => {
+          setControls(key, false);
+          window.clearInterval(resetJump);
+        }, 20);
+      }
+    });
+    console.log("Current Controls", controlsRef.current);
+  }, [mobileControls]);
+
   const startCanvas = () => {
     contextRef.current!.fillStyle = "red";
     window.requestAnimationFrame(loop);
   };
 
-  let controls: ControlsInterface = {
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-    jump: false,
-    respawn: false,
-    sprint: false,
-  };
-
   const setControls = (key: KeyMap, active: boolean) => {
+    let controls = controlsRef.current;
     if (key == KeyMap.Down) {
       controls.down = active;
     }
@@ -252,10 +280,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
     roundTransition.current = true;
     setLoadScreenState(true);
     contextRef.current!.clearRect(0, 0, width, height);
-    Object.keys(controls).forEach(
-      (v) => (controls[v as keyof ControlsInterface] = false)
+    Object.keys(controlsRef.current).forEach(
+      (v) => (controlsRef.current[v as keyof ControlsInterface] = false)
     );
-    socket.emit("controls", controls);
+    socket.emit("controls", controlsRef.current);
     //currentBlock = blockChange();
     const roundChange = setInterval(() => {
       setLoadScreenState(false);
@@ -271,8 +299,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
     return block;
   };
 
+  const getPlayer = () => {
+    const player = players.current.find(
+      (player: Player) => player.id === socket.id
+    );
+    currentPlayer.current = player;
+    return player;
+  };
+
   function update() {
-    if (!roundTransition.current) socket.emit("controls", controls);
+    if (!roundTransition.current) socket.emit("controls", controlsRef.current);
   }
 
   function draw() {
@@ -281,9 +317,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     let cx = 0;
     let cy = 0;
 
-    const playerToFocus = players.current.find(
-      (player: Player) => player.id === socket.id
-    );
+    const playerToFocus = getPlayer();
 
     if (playerToFocus) {
       cx = playerToFocus.x - canvasRef.current!.width / 2 + 140;
@@ -378,8 +412,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <LoadingScreen />
       ) : (
         <div>
-          <Leaderboard players={players} />
+          <Leaderboard players={players} currentPlayer={currentPlayer} />
           <Controls />
+          <MobileControls setMobileControls={setMobileControls} />
         </div>
       )}
       <ToastContainer

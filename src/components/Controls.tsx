@@ -2,7 +2,7 @@ const Controls: React.FC = () => {
   return (
     <ul
       id="controls"
-      className="fixed top-0 left-0 list-none rounded-md bg-zinc-800 p-3 font-serif text-gray-300"
+      className="invisible fixed top-0 right-0 list-none rounded-md bg-zinc-800 p-3 font-serif text-gray-300 md:visible"
     >
       <li>A = Left</li>
       <li>D = Right</li>
