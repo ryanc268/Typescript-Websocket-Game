@@ -18,12 +18,14 @@ import LoadingScreen from "./LoadingScreen";
 
 interface GameBoardProps {
   name: string;
+  colour: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
   imageSrcs: MutableRefObject<string[]>;
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
   name,
+  colour,
   setIsCustomized,
   imageSrcs,
 }) => {
@@ -98,8 +100,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     bgMusic.current!.autoplay = true;
     bgMusic.current!.loop = true;
 
-    currentBlock = blockChange();
-
     socketInitializer();
     const canvas = canvasRef.current;
     const context = canvas!.getContext("2d");
@@ -165,7 +165,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   const socketInitializer = () => {
     fetch("/api/socket");
-    socket = SocketIOClient(window.location.origin, { query: { name: name } });
+    socket = SocketIOClient(window.location.origin, {
+      query: { name: name, colour: colour },
+    });
 
     socket.on("connect", () => {
       console.log("Connected to the server.");
@@ -174,6 +176,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       console.log("Disconnected from the server.");
       bgMusic.current!.pause();
       setIsCustomized(false);
+    });
+
+    socket.on("block", (serverBlock) => {
+      currentBlock = blockChange(serverBlock);
     });
 
     socket.on("map", (serverMap) => {
@@ -250,7 +256,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       (v) => (controls[v as keyof ControlsInterface] = false)
     );
     socket.emit("controls", controls);
-    currentBlock = blockChange();
+    //currentBlock = blockChange();
     const roundChange = setInterval(() => {
       setLoadScreenState(false);
       roundTransition.current = false;
@@ -258,8 +264,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }, 2000);
   };
 
-  const blockChange = () => {
-    const blockChoice = Math.floor(Math.random() * 4) + 1;
+  const blockChange = (blockChoice: number) => {
     const block = new Image();
     //will need to be careful with this since doing it this way assume I know what is being loaded into each array slot
     block.src = imageSrcs.current[blockChoice];

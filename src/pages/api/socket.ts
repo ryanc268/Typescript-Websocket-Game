@@ -27,12 +27,14 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
     const GRAVITY = 0.0218;
     const TICK_RATE = 40;
     //Higher = faster
-    const PLAYER_SPEED = 9.0;
-    const COIN_SPAWN_RATE = 1500;
-    const MAX_COINS = 10;
+    const PLAYER_SPEED = 8.0;
+    const SPRINT_MULTIPLIER = 1.4;
+    const COIN_SPAWN_RATE = 700;
+    const MAX_COINS = 25;
     //Lower = faster
     const JUMP_SPEED = -13;
     let map: number[][] = randomMap();
+    let block: number = Math.floor(Math.random() * 4) + 1;
 
     let coins: Coin[] = [];
     let players: Player[] = [];
@@ -45,12 +47,16 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
     const io: ServerIO = new ServerIO(httpServer);
     res.socket.server.io = io;
 
-    const sendMap = (socket: Socket) => {
+    const sendGameData = (socket: Socket) => {
+      socket.emit("block", block);
       socket.emit("map", map);
     };
 
     io.on("connection", (socket: Socket) => {
-      const playerName = socket.handshake.query.name ?? random.first();
+      const playerName: string = socket.handshake.query.name ?? random.first();
+      const playerColour: string =
+        socket.handshake.query.colour?.toString() ??
+        `#${Math.floor(Math.random() * (0xffffff + 1)).toString(16)}`;
       console.log(`Player ${playerName} connected`);
 
       const ipAddress =
@@ -65,7 +71,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
       // }
       ipMap.set(ipAddress, true);
 
-      sendMap(socket);
+      sendGameData(socket);
 
       const player: Player = {
         x: 100,
@@ -75,7 +81,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
         score: 0,
         name: playerName,
         id: socket.id,
-        colour: `#${Math.floor(Math.random() * (0xffffff + 1)).toString(16)}`,
+        colour: playerColour,
         jumps: { 1: true, 2: true },
         ping: 0,
       };
@@ -197,8 +203,9 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
       }
       coins = [];
       map = randomMap();
+      block = Math.floor(Math.random() * 4) + 1;
       socketMap.forEach((value, key) => {
-        sendMap(value);
+        sendGameData(value);
       });
     };
 
@@ -253,22 +260,22 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
           }
           if (playerControls.right) {
             player.x += playerControls.sprint
-              ? PLAYER_SPEED * 1.5
+              ? PLAYER_SPEED * SPRINT_MULTIPLIER
               : PLAYER_SPEED;
 
             if (isCollidingWithMap(player)) {
               player.x -= playerControls.sprint
-                ? PLAYER_SPEED * 1.5
+                ? PLAYER_SPEED * SPRINT_MULTIPLIER
                 : PLAYER_SPEED;
             }
           } else if (playerControls.left) {
             player.x -= playerControls.sprint
-              ? PLAYER_SPEED * 1.5
+              ? PLAYER_SPEED * SPRINT_MULTIPLIER
               : PLAYER_SPEED;
 
             if (isCollidingWithMap(player)) {
               player.x += playerControls.sprint
-                ? PLAYER_SPEED * 1.5
+                ? PLAYER_SPEED * SPRINT_MULTIPLIER
                 : PLAYER_SPEED;
             }
           }

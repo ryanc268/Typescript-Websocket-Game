@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.3",
+    "@heroicons/react": "^2.0.12",
     "bad-words": "^3.0.4",
     "express": "^4.18.2",
     "next": "12.3.1",

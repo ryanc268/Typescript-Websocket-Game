@@ -1,7 +1,5 @@
 ideas
 
-- FIX IMAGE LOADING FOR MAPS
-
 - customize your square
 - limit of players
 - vertical scrolling scoreboard
@@ -12,6 +10,9 @@ ideas
 - store map data (from random generator algorithm) in a db and use a key / hash of some sort to re-access it at another time (mainly for highscores or time-trials)
 - implement random game mode picker once more than 1 game mode is done
 - attacks?? Some way to kill others and make them respawn. This system can be used for many things
+- arrows keys function as wasd
+- funny quotes on loading screens
+- fix up the initial loading screen to include the socket connection so you dont wait on a blank screen to join the game
 
 game modes
 
@@ -21,7 +22,6 @@ game modes
 
 styling stuff
 
-- tailwindui
 - mobile friendly
 - environment styling
 - make loading screen between rounds prettier

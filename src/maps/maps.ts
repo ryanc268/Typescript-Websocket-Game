@@ -52,7 +52,9 @@ const tileAlgorithm = (
   SPACE_WEIGHT: number
 ) => {
   let tile: number = 0;
-  if (!isSpawn(i, j)) {
+  if (isUnderSpawn(i, j)) {
+    return 1;
+  } else if (!isSpawn(i, j)) {
     if (blockInARow > 0) {
       if (Math.floor(Math.random() * BLOCK_WEIGHT) > blockInARow) {
         tile = 1;
@@ -78,6 +80,14 @@ const tileAlgorithm = (
 
 const isSpawn = (i: number, j: number) => {
   if (i === 3 || (i === 4 && j === 3) || j === 4) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const isUnderSpawn = (i: number, j: number) => {
+  if (i === 4 && j === 3) {
     return true;
   } else {
     return false;

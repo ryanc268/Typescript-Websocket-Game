@@ -12,8 +12,10 @@ interface LeaderboardProps {
 const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
   const leaderboardElRef = useRef<HTMLDivElement | null>(null);
 
+  const LEADERBOARD_REFRESH_RATE = 1000;
+
   useEffect(() => {
-    const interval = setInterval(drawLeaderboard, 2000);
+    const interval = setInterval(drawLeaderboard, LEADERBOARD_REFRESH_RATE);
     drawLeaderboard();
     return () => window.clearInterval(interval);
   }, []);

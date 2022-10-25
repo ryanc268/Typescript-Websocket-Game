@@ -7,6 +7,7 @@ import LoadingScreen from "../components/LoadingScreen";
 const Home: NextPage = () => {
   const [isCustomized, setIsCustomized] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
+  const [colour, setColour] = useState<string>("");
   const [isPreLoading, setIsPreLoading] = useState<boolean>(true);
 
   let imageSrcs = useRef<string[]>([]);
@@ -41,12 +42,17 @@ const Home: NextPage = () => {
   return (
     <div>
       {!isCustomized ? (
-        <CustomizeChar setIsCustomized={setIsCustomized} setName={setName} />
+        <CustomizeChar
+          setIsCustomized={setIsCustomized}
+          setName={setName}
+          setColour={setColour}
+        />
       ) : isPreLoading ? (
         <LoadingScreen />
       ) : (
         <GameBoard
           name={name}
+          colour={colour}
           setIsCustomized={setIsCustomized}
           imageSrcs={imageSrcs}
         />
