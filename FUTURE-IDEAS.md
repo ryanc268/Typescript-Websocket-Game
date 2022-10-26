@@ -22,7 +22,6 @@ game modes
 
 styling stuff
 
-- mobile friendly
 - environment styling
 - make loading screen between rounds prettier
 

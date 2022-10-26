@@ -146,22 +146,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   useEffect(() => {
     mobileControls.forEach((value, key) => {
       if (bgMusic.current!.paused) bgMusic.current!.play();
-      console.log("Control", key, value);
       setControls(key, value);
-      if (key === KeyMap.Jump) {
-        const resetJump = setInterval(() => {
-          setControls(key, false);
-          window.clearInterval(resetJump);
-        }, 100);
-      }
-      if (key === KeyMap.Respawn) {
-        const resetJump = setInterval(() => {
-          setControls(key, false);
-          window.clearInterval(resetJump);
-        }, 20);
-      }
     });
-    console.log("Current Controls", controlsRef.current);
   }, [mobileControls]);
 
   const startCanvas = () => {
