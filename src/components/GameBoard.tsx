@@ -11,7 +11,12 @@ import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
+import {
+  TILE_SIZE,
+  COIN_SIZE,
+  PLAYER_SIZE,
+  TICK_RATE,
+} from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
@@ -383,9 +388,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
     if (!roundTransition.current) {
       update();
       draw();
+      //lastRender = timestamp;
     }
 
-    lastRender = timestamp;
     window.requestAnimationFrame(loop);
   }
 

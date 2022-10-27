@@ -14,6 +14,7 @@ const MobileControls: React.FC<MobileControlsProps> = ({
   setMobileControls,
 }) => {
   const controlsChange = (key: KeyMap, state: boolean) => {
+    //TODO: Possibly do this without a map? Would need testing to see if its as responsive
     let controls: Map<KeyMap, boolean> = new Map();
     controls.set(key, state);
     setMobileControls(controls);

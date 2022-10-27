@@ -16,6 +16,8 @@ import {
   PLAYER_SIZE,
   COIN_SIZE,
   END_GAME_SCORE,
+  TICK_RATE,
+  MAX_PLAYER_JUMPS,
 } from "../../global/constants";
 const random = require("random-name");
 
@@ -25,14 +27,13 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
 
     //Higher = more pull
     const GRAVITY = 0.0218;
-    const TICK_RATE = 40;
     //Higher = faster
     const PLAYER_SPEED = 8.0;
-    const SPRINT_MULTIPLIER = 1.4;
+    const SPRINT_MULTIPLIER = 1.3;
     const COIN_SPAWN_RATE = 700;
     const MAX_COINS = 25;
     //Lower = faster
-    const JUMP_SPEED = -13;
+    const JUMP_SPEED = -11;
     let map: number[][] = randomMap();
     let block: number = Math.floor(Math.random() * 4) + 1;
 
@@ -82,7 +83,8 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
         name: playerName,
         id: socket.id,
         colour: playerColour,
-        jumps: { 1: true, 2: true },
+        jumps: 0,
+        isJumping: false,
         ping: 0,
       };
 
@@ -289,23 +291,23 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
           //Landing on terrain after a jump
           if (isCollidingWithMap(player)) {
             if (player.vy > 0) {
-              player.jumps = { 1: true, 2: true };
+              player.jumps = 0;
             }
             player.y -= player.vy;
             player.vy = 0;
           }
-          //TODO: fix double jumps
-          if (playerControls.jump && player.jumps[1] && player.jumps[2]) {
-            player.jumps[1] = false;
-            player.vy = JUMP_SPEED;
-          } else if (
+
+          //Double Jump logic
+          if (
             playerControls.jump &&
-            !player.jumps[1] &&
-            player.jumps[2]
+            player.jumps < MAX_PLAYER_JUMPS &&
+            !player.isJumping
           ) {
-            player.jumps[1] = false;
-            player.jumps[2] = false;
+            player.isJumping = true;
+            player.jumps++;
             player.vy = JUMP_SPEED;
+          } else if (!playerControls.jump && player.isJumping) {
+            player.isJumping = false;
           }
 
           if (player.y > map.length * TILE_SIZE * 2) {

@@ -8,17 +8,13 @@ export interface ControlsInterface {
   sprint: boolean;
 }
 
-export interface Jumps {
-  1: boolean;
-  2: boolean;
-}
-
 export interface Player {
   id: string;
   name: string;
   score: number;
   colour: string;
-  jumps: Jumps;
+  jumps: number;
+  isJumping: boolean;
   ping: number;
   x: number;
   y: number;
