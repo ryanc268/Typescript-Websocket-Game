@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -13,26 +13,9 @@ interface MobileControlsProps {
 const MobileControls: React.FC<MobileControlsProps> = ({
   setMobileControls,
 }) => {
-  const controlsChange = (key: string, state: boolean) => {
+  const controlsChange = (key: KeyMap, state: boolean) => {
     let controls: Map<KeyMap, boolean> = new Map();
-    if (key === "jump") {
-      controls.set(KeyMap.Jump, state);
-    }
-    if (key === "left") {
-      controls.set(KeyMap.Left, state);
-    }
-    if (key === "right") {
-      controls.set(KeyMap.Right, state);
-    }
-    if (key === "down") {
-      controls.set(KeyMap.Down, state);
-    }
-    if (key === "respawn") {
-      controls.set(KeyMap.Respawn, state);
-    }
-    if (key === "sprint") {
-      controls.set(KeyMap.Sprint, state);
-    }
+    controls.set(key, state);
     setMobileControls(controls);
   };
 
@@ -42,43 +25,43 @@ const MobileControls: React.FC<MobileControlsProps> = ({
       className="fixed bottom-0 grid w-full grid-cols-12 grid-rows-2 rounded-md bg-zinc-800 bg-opacity-70 md:invisible"
     >
       <button
-        onTouchStart={() => controlsChange("left", true)}
-        onTouchEnd={() => controlsChange("left", false)}
+        onTouchStart={() => controlsChange(KeyMap.Left, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Left, false)}
         className="col-start-1 col-end-4 row-start-1"
       >
         <ArrowLeftIcon className="text-blue-500" />
       </button>
       <button
-        onTouchStart={() => controlsChange("jump", true)}
-        onTouchEnd={() => controlsChange("jump", false)}
+        onTouchStart={() => controlsChange(KeyMap.Jump, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Jump, false)}
         className="col-start-4 col-end-10 row-start-1"
       >
         <p className="text-lg font-bold text-blue-500">Jump</p>
       </button>
       <button
-        onTouchStart={() => controlsChange("right", true)}
-        onTouchEnd={() => controlsChange("right", false)}
+        onTouchStart={() => controlsChange(KeyMap.Right, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Right, false)}
         className="col-start-10 col-end-13 row-start-1"
       >
         <ArrowRightIcon className="text-blue-500" />
       </button>
       <button
-        onTouchStart={() => controlsChange("sprint", true)}
-        onTouchEnd={() => controlsChange("sprint", false)}
+        onTouchStart={() => controlsChange(KeyMap.Sprint, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Sprint, false)}
         className="col-start-1 col-end-6 row-start-2"
       >
         <p className="text-lg font-bold text-blue-500">Sprint</p>
       </button>
       <button
-        onTouchStart={() => controlsChange("down", true)}
-        onTouchEnd={() => controlsChange("down", false)}
+        onTouchStart={() => controlsChange(KeyMap.Down, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Down, false)}
         className="col-start-6 col-end-8 row-start-2"
       >
         <ArrowDownIcon className="text-blue-500" />
       </button>
       <button
-        onTouchStart={() => controlsChange("respawn", true)}
-        onTouchEnd={() => controlsChange("respawn", false)}
+        onTouchStart={() => controlsChange(KeyMap.Respawn, true)}
+        onTouchEnd={() => controlsChange(KeyMap.Respawn, false)}
         className="col-start-8 col-end-13 row-start-2"
       >
         <p className=" text-lg font-bold text-blue-500">Respawn</p>

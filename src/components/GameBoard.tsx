@@ -55,8 +55,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   let roundTransition = useRef<boolean>(false);
   let [loadScreenState, setLoadScreenState] = useState<boolean>(false);
 
-  let width: number;
-  let height: number;
+  let width: number = window.innerWidth;
+  let height: number = window.innerWidth;
 
   let coinImg = new Image();
   coinImg.src = imageSrcs.current[0];
@@ -157,22 +157,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   const setControls = (key: KeyMap, active: boolean) => {
     let controls = controlsRef.current;
-    if (key == KeyMap.Down) {
+    if (key === KeyMap.Down) {
       controls.down = active;
     }
-    if (key == KeyMap.Left) {
+    if (key === KeyMap.Left) {
       controls.left = active;
     }
-    if (key == KeyMap.Right) {
+    if (key === KeyMap.Right) {
       controls.right = active;
     }
-    if (key == KeyMap.Jump) {
+    if (key === KeyMap.Jump) {
       controls.jump = active;
     }
-    if (key == KeyMap.Respawn) {
+    if (key === KeyMap.Respawn) {
       controls.respawn = active;
     }
-    if (key == KeyMap.Sprint) {
+    if (key === KeyMap.Sprint) {
       controls.sprint = active;
     }
   };
@@ -400,7 +400,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <>
           <Leaderboard players={players} currentPlayer={currentPlayer} />
           <Controls />
-          <MobileControls setMobileControls={setMobileControls} />
+          {width < 768 ? (
+            <MobileControls setMobileControls={setMobileControls} />
+          ) : (
+            <></>
+          )}
         </>
       )}
       <ToastContainer
