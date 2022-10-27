@@ -210,8 +210,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
     socket.on("playerJoin", (player) => {
       toast(`Player ${player} joined`, {
-        position: "bottom-left",
-        autoClose: 2000,
+        position: isMobile() ? "top-center" : "bottom-left",
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -222,8 +222,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
     });
     socket.on("playerLeave", (player) => {
       toast(`Player ${player} left`, {
-        position: "bottom-left",
-        autoClose: 2000,
+        position: isMobile() ? "top-center" : "bottom-left",
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -277,6 +277,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       window.clearInterval(roundChange);
     }, 2000);
   };
+
+  const isMobile = () => width < 768;
 
   const blockChange = (blockChoice: number) => {
     const block = new Image();
@@ -400,7 +402,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <>
           <Leaderboard players={players} currentPlayer={currentPlayer} />
           <Controls />
-          {width < 768 ? (
+          {isMobile() ? (
             <MobileControls setMobileControls={setMobileControls} />
           ) : (
             <></>
