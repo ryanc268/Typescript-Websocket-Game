@@ -397,11 +397,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {loadScreenState ? (
         <LoadingScreen />
       ) : (
-        <div>
+        <>
           <Leaderboard players={players} currentPlayer={currentPlayer} />
           <Controls />
           <MobileControls setMobileControls={setMobileControls} />
-        </div>
+        </>
       )}
       <ToastContainer
         position="bottom-left"

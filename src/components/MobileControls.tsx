@@ -39,55 +39,49 @@ const MobileControls: React.FC<MobileControlsProps> = ({
   return (
     <div
       id="mobilecontrols"
-      className="fixed bottom-0 right-0 grid grid-cols-3 gap-3 rounded-md bg-zinc-800 p-5 "
+      className="fixed bottom-0 grid w-full grid-cols-12 grid-rows-2 rounded-md bg-zinc-800 bg-opacity-70 md:invisible"
     >
       <button
         onTouchStart={() => controlsChange("left", true)}
         onTouchEnd={() => controlsChange("left", false)}
-        //onClick={() => controlsChange("left", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-1 col-end-4 row-start-1"
       >
         <ArrowLeftIcon className="text-blue-500" />
       </button>
       <button
         onTouchStart={() => controlsChange("jump", true)}
         onTouchEnd={() => controlsChange("jump", false)}
-        //onClick={() => controlsChange("jump", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-4 col-end-10 row-start-1"
       >
-        <p className="font-bold text-blue-500">Jump</p>
+        <p className="text-lg font-bold text-blue-500">Jump</p>
       </button>
       <button
         onTouchStart={() => controlsChange("right", true)}
         onTouchEnd={() => controlsChange("right", false)}
-        //onClick={() => controlsChange("right", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-10 col-end-13 row-start-1"
       >
         <ArrowRightIcon className="text-blue-500" />
       </button>
       <button
         onTouchStart={() => controlsChange("sprint", true)}
         onTouchEnd={() => controlsChange("sprint", false)}
-        //onClick={() => controlsChange("sprint", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-1 col-end-6 row-start-2"
       >
-        <p className="font-bold text-blue-500">Sprint</p>
+        <p className="text-lg font-bold text-blue-500">Sprint</p>
       </button>
       <button
         onTouchStart={() => controlsChange("down", true)}
         onTouchEnd={() => controlsChange("down", false)}
-        //onClick={() => controlsChange("down", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-6 col-end-8 row-start-2"
       >
         <ArrowDownIcon className="text-blue-500" />
       </button>
       <button
         onTouchStart={() => controlsChange("respawn", true)}
         onTouchEnd={() => controlsChange("respawn", false)}
-        //onClick={() => controlsChange("respawn", true)}
-        className="h-15 w-15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="col-start-8 col-end-13 row-start-2"
       >
-        <p className="font-bold text-blue-500">Respawn</p>
+        <p className=" text-lg font-bold text-blue-500">Respawn</p>
       </button>
     </div>
   );
