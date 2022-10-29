@@ -1,12 +1,5 @@
 import SocketIOClient, { Socket } from "socket.io-client";
-import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,24 +9,24 @@ import {
   COIN_SIZE,
   PLAYER_SIZE,
   TICK_RATE,
+  SPRITE_CHANGE_SPEED,
 } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
 import MobileControls from "./MobileControls";
+import resourceJson from "../resources/gameresources.json";
 
 interface GameBoardProps {
   name: string;
   colour: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
-  imageSrcs: MutableRefObject<string[]>;
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
   name,
   colour,
   setIsCustomized,
-  imageSrcs,
 }) => {
   let socket: Socket; //SocketIOClient();
 
@@ -64,9 +57,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
   let height: number = window.innerWidth;
 
   let coinImg = new Image();
-  coinImg.src = imageSrcs.current[0];
+  coinImg.src = resourceJson.blocks[0];
 
   let currentBlock: HTMLImageElement;
+  //let playerSprite = new Image();
+  //playerSprite.src = "";
+  //let spriteState: number = 0;
 
   let coinAudio = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("/coin.wav") : undefined
@@ -96,13 +92,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
     const isSupported = window && window.addEventListener;
     if (!isSupported) return;
 
+    //playerSprite.src = setSprite();
+
     window.addEventListener("keydown", (e) => {
       if (bgMusic.current!.paused) bgMusic.current!.play();
+      //setSprite();
       setControls(e.key.toLowerCase() as KeyMap, true);
     });
-    window.addEventListener("keyup", (e) =>
-      setControls(e.key.toLowerCase() as KeyMap, false)
-    );
+    window.addEventListener("keyup", (e) => {
+      setControls(e.key.toLowerCase() as KeyMap, false);
+    });
     window.addEventListener("resize", () => {
       width = window.innerWidth;
       height = window.innerHeight;
@@ -159,6 +158,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
     contextRef.current!.fillStyle = "red";
     window.requestAnimationFrame(loop);
   };
+
+  // const setSprite = () => {
+  //   spriteState++;
+  //   let spriteNum = Number.isInteger(spriteState / SPRITE_CHANGE_SPEED)
+  //     ? spriteState / SPRITE_CHANGE_SPEED
+  //     : Math.floor(spriteState / SPRITE_CHANGE_SPEED);
+
+  //   if (controlsRef.current.left) {
+  //     spriteNum += 3;
+  //   } else if (controlsRef.current.right) {
+  //     spriteNum += 6;
+  //   }
+
+  //   if (spriteState >= SPRITE_CHANGE_SPEED * 3 - 1) spriteState = 0;
+
+  //   return resourceJson.characters[1][spriteNum];
+  // };
 
   const setControls = (key: KeyMap, active: boolean) => {
     let controls = controlsRef.current;
@@ -288,7 +304,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const blockChange = (blockChoice: number) => {
     const block = new Image();
     //will need to be careful with this since doing it this way assume I know what is being loaded into each array slot
-    block.src = imageSrcs.current[blockChoice];
+    block.src = resourceJson.blocks[blockChoice];
     return block;
   };
 
@@ -365,6 +381,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
           PLAYER_SIZE + 2
         );
       }
+
+      // playerSprite.src = setSprite();
+      // contextRef.current!.drawImage(
+      //   playerSprite,
+      //   player.x - cx,
+      //   player.y - cy - 10,
+      //   PLAYER_SIZE + 10,
+      //   PLAYER_SIZE + 10
+      // );
 
       contextRef.current!.fillStyle = player.colour;
       contextRef.current!.fillRect(

@@ -22,6 +22,12 @@ export interface Player {
   vy: number;
 }
 
+export interface PlayerSprite {
+  forward: string[];
+  left: string[];
+  right: string[];
+}
+
 export interface Coin {
   x: number;
   y: number;

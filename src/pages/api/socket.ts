@@ -83,6 +83,12 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
         name: playerName,
         id: socket.id,
         colour: playerColour,
+        // character: 1,
+        // sprite: {
+        //   forward: [],
+        //   left: [],
+        //   right: [],
+        // },
         jumps: 0,
         isJumping: false,
         ping: 0,

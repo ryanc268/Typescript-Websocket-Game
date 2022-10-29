@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import CustomizeChar from "../components/CustomizeChar";
 import GameBoard from "../components/GameBoard";
 import LoadingScreen from "../components/LoadingScreen";
+import resourceJson from "../resources/gameresources.json";
 
 const Home: NextPage = () => {
   const [isCustomized, setIsCustomized] = useState<boolean>(false);
@@ -10,17 +11,13 @@ const Home: NextPage = () => {
   const [colour, setColour] = useState<string>("");
   const [isPreLoading, setIsPreLoading] = useState<boolean>(true);
 
-  let imageSrcs = useRef<string[]>([]);
-
   useEffect(() => {
-    const imgs: string[] = [
-      "/img/coin.png",
-      "/img/block.png",
-      "/img/block2.png",
-      "/img/block3.png",
-      "/img/block4.png",
-    ];
-    cacheImages(imgs);
+    let characterResources: string[] = [];
+    Object.values(resourceJson.characters).forEach((val) => {
+      characterResources = [...characterResources, ...val];
+    });
+
+    cacheImages([...resourceJson.blocks, ...characterResources]);
   }, []);
 
   const cacheImages = async (srcArray: string[]) => {
@@ -35,7 +32,6 @@ const Home: NextPage = () => {
 
     await Promise.all(promises);
 
-    imageSrcs.current = srcArray;
     setIsPreLoading(false);
   };
 
@@ -54,7 +50,6 @@ const Home: NextPage = () => {
           name={name}
           colour={colour}
           setIsCustomized={setIsCustomized}
-          imageSrcs={imageSrcs}
         />
       )}
     </div>
