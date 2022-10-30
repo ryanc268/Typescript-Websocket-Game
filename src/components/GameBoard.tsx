@@ -96,7 +96,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
     window.addEventListener("keydown", (e) => {
       if (bgMusic.current!.paused) bgMusic.current!.play();
-      //setSprite();
       setControls(e.key.toLowerCase() as KeyMap, true);
     });
     window.addEventListener("keyup", (e) => {
@@ -431,11 +430,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ) : (
         <>
           <Leaderboard players={players} currentPlayer={currentPlayer} />
-          <Controls />
           {isMobile() ? (
             <MobileControls setMobileControls={setMobileControls} />
           ) : (
-            <></>
+            <Controls />
           )}
         </>
       )}

@@ -45,13 +45,24 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
       );
       for (const player of sortedScores) {
         const scoreEl = document.createElement("div");
+        const nameLine = document.createElement("div");
+        const colour = document.createElement("div");
         const label = document.createElement("div");
         const ping = document.createElement("span");
+
+        colour.className = `${styles.colour}`;
+        colour.style.background = `${player.colour}`;
+
         label.innerText = `${player.name}: ${player.score}/${END_GAME_SCORE}`;
+        label.className = `${styles.name}`;
         ping.className = `${styles.ping}`;
         ping.style.color = pingColourPicker(player.ping);
         ping.innerHTML = `${player.ping}ms`;
-        scoreEl.append(label);
+
+        nameLine.append(colour);
+        nameLine.append(label);
+
+        scoreEl.append(nameLine);
         scoreEl.append(ping);
         leaderboardElRef.current!.append(scoreEl);
       }

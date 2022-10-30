@@ -3,7 +3,6 @@ ideas
 - customize your square
 - limit of players
 - vertical scrolling scoreboard
-- hidable nav bar and controls
 - time limit???
 - crown above previous rounds winner (resets to current winner as others win)
 - store map data (from random generator algorithm) in a db and use a key / hash of some sort to re-access it at another time (mainly for highscores or time-trials)

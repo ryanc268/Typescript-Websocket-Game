@@ -4,3 +4,15 @@
   display: flex;
   font-size: 12px;
 }
+
+.colour {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 9px;
+}
+
+.name {
+  display: inline-block;
+  font-size: 20px;
+}
