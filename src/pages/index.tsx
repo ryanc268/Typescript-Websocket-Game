@@ -20,6 +20,7 @@ const Home: NextPage = () => {
     cacheImages([...resourceJson.blocks, ...characterResources]);
   }, []);
 
+  //caching the images used in the game
   const cacheImages = async (srcArray: string[]) => {
     const promises = await srcArray.map((src) => {
       return new Promise(function (resolve, reject) {
