@@ -72,8 +72,6 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
       // }
       ipMap.set(ipAddress, true);
 
-      sendGameData(socket);
-
       const player: Player = {
         x: 100,
         y: 100,
@@ -109,18 +107,24 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
 
       socket.on("disconnect", () => {
         console.log(`${player.name} disconnected`);
+        ipMap.delete(ipAddress);
+        playerSocketMap.delete(socket.id);
+        socketMap.delete(socket.id);
         socketMap.forEach((value, key) => {
           if (key !== player.id) {
             value.emit("playerLeave", player.name);
           }
         });
-        ipMap.delete(ipAddress);
-        playerSocketMap.delete(socket.id);
         players = players.filter((player) => player.id !== socket.id);
       });
 
       socket.on("controls", (controls) => {
         controlsMap.set(socket.id, controls);
+      });
+
+      socket.on("ready", (callback) => {
+        sendGameData(socket);
+        callback();
       });
     });
 

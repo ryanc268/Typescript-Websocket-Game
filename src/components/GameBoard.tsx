@@ -1,4 +1,3 @@
-import SocketIOClient, { Socket } from "socket.io-client";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
@@ -16,19 +15,14 @@ import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
 import MobileControls from "./MobileControls";
 import resourceJson from "../resources/gameresources.json";
+import { useSocket } from "../components/SocketContext";
 
 interface GameBoardProps {
-  name: string;
-  colour: string;
   setIsCustomized: Dispatch<SetStateAction<boolean>>;
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({
-  name,
-  colour,
-  setIsCustomized,
-}) => {
-  let socket: Socket; //SocketIOClient();
+const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
+  let socket = useSocket();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -125,7 +119,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
     canvas!.width = width;
     canvas!.height = height;
     contextRef.current = context;
-    startCanvas();
+    //waits for the callback to start drawing the canvas
+    //this callback will have meant that the server has sent the block and map to the client
+    socket.emit("ready", () => {
+      startCanvas();
+    });
 
     //cleans up events
     return () => {
@@ -142,7 +140,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         canvas!.height = height;
       });
       bgMusic.current!.pause();
-      socket.disconnect();
+      bgMusic.current!.srcObject = null;
+      console.log("Game Dismounting");
+      //socket.close();
     };
   }, []);
 
@@ -198,37 +198,42 @@ const GameBoard: React.FC<GameBoardProps> = ({
   };
 
   const socketInitializer = () => {
-    fetch("/api/socket");
-    socket = SocketIOClient(window.location.origin, {
-      query: { name: name, colour: colour },
-    });
+    // fetch("/api/socket");
+    // socket = SocketIOClient(window.location.origin, {
+    //   query: { name: name, colour: colour },
+    // });
 
-    socket.on("connect", () => {
-      console.log("Connected to the server.");
-    });
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server.");
-      bgMusic.current!.pause();
-      setIsCustomized(false);
-    });
+    // socket.on("connect", () => {
+    //   console.log("Connected to the server.");
+    // });
+    // socket.on("disconnect", () => {
+    //   console.log("Disconnected from the server.");
+    //   bgMusic.current!.pause();
+    //   bgMusic.current!.srcObject = null;
+    //   setIsCustomized(false);
+    // });
 
-    socket.on("block", (serverBlock) => {
+    //TODO: .off is a (maybe?) quickfix. Find out why the .off works and if there is a way to not need it to prevent multiple event calls
+
+    socket.off("block").on("block", (serverBlock) => {
+      console.log("Block Change");
       currentBlock = blockChange(serverBlock);
     });
 
-    socket.on("map", (serverMap) => {
+    socket.off("map").on("map", (serverMap) => {
       map = serverMap;
     });
 
-    socket.on("players", (serverPlayers) => {
+    socket.off("players").on("players", (serverPlayers) => {
       players.current = serverPlayers;
     });
 
-    socket.on("coins", (serverCoins) => {
+    socket.off("coins").on("coins", (serverCoins) => {
       coins = serverCoins;
     });
 
-    socket.on("playerJoin", (player) => {
+    socket.off("playerJoin").on("playerJoin", (player) => {
+      console.log("PlayerJoin Emit");
       toast(`Player ${player} joined`, {
         position: isMobile() ? "top-center" : "bottom-left",
         autoClose: 1000,
@@ -240,7 +245,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
         theme: "dark",
       });
     });
-    socket.on("playerLeave", (player) => {
+    socket.off("playerLeave").on("playerLeave", (player) => {
+      console.log("PlayerLeave Emit");
       toast(`Player ${player} left`, {
         position: isMobile() ? "top-center" : "bottom-left",
         autoClose: 1000,
@@ -253,21 +259,21 @@ const GameBoard: React.FC<GameBoardProps> = ({
       });
     });
 
-    socket.on("playCoinSound", () => {
+    socket.off("playCoinSound").on("playCoinSound", () => {
       coinAudio.current!.currentTime = 0;
       coinAudio.current!.play();
     });
-    socket.on("playVictorySound", (name: string) => {
+    socket.off("playVictorySound").on("playVictorySound", (name: string) => {
       endGame(name);
       victoryAudio.current!.currentTime = 0;
       victoryAudio.current!.play();
     });
-    socket.on("playDefeatSound", (name: string) => {
+    socket.off("playDefeatSound").on("playDefeatSound", (name: string) => {
       endGame(name);
       defeatAudio.current!.currentTime = 0;
       defeatAudio.current!.play();
     });
-    socket.on("ping", (callback) => {
+    socket.off("ping").on("ping", (callback) => {
       callback();
     });
   };
@@ -304,6 +310,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     const block = new Image();
     //will need to be careful with this since doing it this way assume I know what is being loaded into each array slot
     block.src = resourceJson.blocks[blockChoice];
+
     return block;
   };
 
