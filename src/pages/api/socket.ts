@@ -10,7 +10,7 @@ import {
   Player,
   Rect,
 } from "../../global/types/gameTypes";
-import { mainMap, randomMap } from "../../maps/maps";
+import { randomMap } from "../../maps/maps";
 import {
   TILE_SIZE,
   PLAYER_SIZE,
@@ -19,6 +19,7 @@ import {
   TICK_RATE,
   MAX_PLAYER_JUMPS,
 } from "../../global/constants";
+import { GameMode } from "../../global/types/gameEnums";
 const random = require("random-name");
 
 const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
@@ -34,8 +35,9 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
     const MAX_COINS = 25;
     //Lower = faster
     const JUMP_SPEED = -11;
-    let map: number[][] = randomMap();
-    let block: number = Math.floor(Math.random() * 4) + 1;
+
+    let map: number[][] = []; // = randomMap();
+    let block: number = 1; // Math.floor(Math.random() * 4) + 1;
 
     let coins: Coin[] = [];
     let players: Player[] = [];
@@ -54,6 +56,8 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
     };
 
     io.on("connection", (socket: Socket) => {
+      if (!players.length) startNewGame();
+
       const playerName: string = socket.handshake.query.name ?? random.first();
       const playerColour: string =
         socket.handshake.query.colour?.toString() ??
@@ -116,6 +120,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
           }
         });
         players = players.filter((player) => player.id !== socket.id);
+        if (!players.length) endGameLobby();
       });
 
       socket.on("controls", (controls) => {
@@ -231,7 +236,6 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
         y: randomRow * TILE_SIZE,
       });
     };
-    setInterval(spawnCoin, COIN_SPAWN_RATE);
 
     const tick = (delta: number) => {
       for (const player of players) {
@@ -257,7 +261,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
                   value.emit("playDefeatSound", `${player.name} is`);
                 }
               });
-              resetGame();
+              startNewGame();
               return;
             }
             socketMap.get(player.id)!.emit("playCoinSound");
@@ -332,12 +336,40 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
       io.emit("coins", coins);
     };
 
+    let intervals: NodeJS.Timer[] = [];
     let lastUpdate = Date.now();
-    setInterval(() => {
-      const now = Date.now();
-      tick(now - lastUpdate);
-      lastUpdate = now;
-    }, 1000 / TICK_RATE);
+
+    const startNewGame = () => {
+      intervals.forEach((i) => clearInterval(i));
+      intervals = [];
+
+      const game: GameMode = (Math.floor(Math.random() * 1) + 1) as GameMode;
+      console.log("Starting New Game:", GameMode[game]);
+
+      switch (game) {
+        case GameMode.CollectTheCoins:
+          resetGame();
+          intervals.push(
+            setInterval(() => {
+              const now = Date.now();
+              tick(now - lastUpdate);
+              lastUpdate = now;
+            }, 1000 / TICK_RATE)
+          );
+          intervals.push(setInterval(spawnCoin, COIN_SPAWN_RATE));
+          break;
+        case GameMode.RaceToTheFinish:
+          break;
+        default:
+          break;
+      }
+    };
+
+    const endGameLobby = () => {
+      console.log("No Players left, ending game lobby");
+      intervals.forEach((i) => clearInterval(i));
+      intervals = [];
+    };
   }
 
   res.end();

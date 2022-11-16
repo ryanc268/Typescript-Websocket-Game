@@ -25,7 +25,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
 
   useEffect(() => {
     const interval = setInterval(drawLeaderboard, LEADERBOARD_REFRESH_RATE);
-    drawLeaderboard();
     return () => window.clearInterval(interval);
   }, []);
 
@@ -89,14 +88,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   };
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog

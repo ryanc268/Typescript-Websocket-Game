@@ -3,13 +3,7 @@ import { ControlsInterface, Player } from "../global/types/gameTypes";
 import { KeyMap } from "../global/types/gameEnums";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  TILE_SIZE,
-  COIN_SIZE,
-  PLAYER_SIZE,
-  TICK_RATE,
-  SPRITE_CHANGE_SPEED,
-} from "../global/constants";
+import { TILE_SIZE, COIN_SIZE, PLAYER_SIZE } from "../global/constants";
 import Controls from "./Controls";
 import Leaderboard from "./Leaderboard";
 import LoadingScreen from "./LoadingScreen";
@@ -216,7 +210,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     //TODO: .off is a (maybe?) quickfix. Find out why the .off works and if there is a way to not need it to prevent multiple event calls
 
     socket.off("block").on("block", (serverBlock) => {
-      console.log("Block Change");
       currentBlock = blockChange(serverBlock);
     });
 
@@ -233,7 +226,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     });
 
     socket.off("playerJoin").on("playerJoin", (player) => {
-      console.log("PlayerJoin Emit");
       toast(`Player ${player} joined`, {
         position: isMobile() ? "top-center" : "bottom-left",
         autoClose: 1000,
@@ -246,7 +238,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
       });
     });
     socket.off("playerLeave").on("playerLeave", (player) => {
-      console.log("PlayerLeave Emit");
       toast(`Player ${player} left`, {
         position: isMobile() ? "top-center" : "bottom-left",
         autoClose: 1000,

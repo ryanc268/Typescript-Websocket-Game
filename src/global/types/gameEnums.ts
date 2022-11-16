@@ -7,3 +7,10 @@ export enum KeyMap {
   Respawn = "r",
   Sprint = "shift",
 }
+
+export enum GameMode {
+  CollectTheCoins = 1,
+  RaceToTheFinish = 2,
+  FightToTheDeath = 3,
+  ClimbToTheTop = 4,
+}
