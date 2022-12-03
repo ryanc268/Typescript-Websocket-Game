@@ -2,6 +2,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MutableRefObject, useEffect, useRef, Fragment, useState } from "react";
+import Image from "next/image";
 import { END_GAME_SCORE } from "../global/constants";
 import { Player } from "../global/types/gameTypes";
 import styles from "../styles/Home.module.css";
@@ -26,7 +27,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   useEffect(() => {
     const interval = setInterval(drawLeaderboard, LEADERBOARD_REFRESH_RATE);
     return () => window.clearInterval(interval);
-  }, []);
+  });
 
   const drawLeaderboard = () => {
     if (playerNameRef.current && playerColourRef.current) {
@@ -143,10 +144,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
                   </Transition.Child>
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
                     <div className="flex flex-shrink-0 items-center px-4">
-                      <img
+                      <Image
                         className="h-8 w-auto"
                         src="/img/ryanlogo.png"
                         alt="ryanc268 logo"
+                        width="100"
+                        height="100"
                       />
                       <p className="ml-5 text-xl">Leaderboard</p>
                     </div>
@@ -184,10 +187,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
           <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <div className="flex flex-shrink-0 items-center px-4">
-                <img
+                <Image
                   className="h-8 w-auto"
                   src="/img/ryanlogo.png"
                   alt="ryanc268 logo"
+                  width="100"
+                  height="100"
                 />
                 <p className="ml-5 text-xl">Leaderboard</p>
               </div>

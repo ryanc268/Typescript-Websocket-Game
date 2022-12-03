@@ -41,8 +41,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
   let roundTransition = useRef<boolean>(false);
   let [loadScreenState, setLoadScreenState] = useState<boolean>(false);
 
-  let width: number = window.innerWidth;
-  let height: number = window.innerWidth;
+  // let width = useRef<number>(window.innerWidth);
+  // let height = useRef<number>(window.innerHeight);
 
   let coinImg = new Image();
   coinImg.src = resourceJson.blocks[0];
@@ -90,14 +90,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
       setControls(e.key.toLowerCase() as KeyMap, false);
     });
     window.addEventListener("resize", () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas!.width = width;
-      canvas!.height = height;
+      canvas!.width = window.innerWidth;
+      canvas!.height = window.innerHeight;
     });
 
-    width = window.innerWidth;
-    height = window.innerHeight;
+    // width = window.innerWidth;
+    // height = window.innerHeight;
 
     coinAudio.current!.volume = 0.05;
     victoryAudio.current!.volume = 0.1;
@@ -110,8 +108,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     socketInitializer();
     const canvas = canvasRef.current;
     const context = canvas!.getContext("2d");
-    canvas!.width = width;
-    canvas!.height = height;
+    canvas!.width = window.innerWidth;
+    canvas!.height = window.innerHeight;
     contextRef.current = context;
     //waits for the callback to start drawing the canvas
     //this callback will have meant that the server has sent the block and map to the client
@@ -128,17 +126,15 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
         setControls(e.key as KeyMap, false)
       );
       window.removeEventListener("resize", () => {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas!.width = width;
-        canvas!.height = height;
+        canvas!.width = window.innerWidth;
+        canvas!.height = window.innerHeight;
       });
       bgMusic.current!.pause();
       bgMusic.current!.srcObject = null;
       console.log("Game Dismounting");
       //socket.close();
     };
-  }, []);
+  });
 
   useEffect(() => {
     mobileControls.forEach((value, key) => {
@@ -282,7 +278,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     });
     roundTransition.current = true;
     setLoadScreenState(true);
-    contextRef.current!.clearRect(0, 0, width, height);
+    contextRef.current!.clearRect(0, 0, window.innerWidth, window.innerHeight);
     Object.keys(controlsRef.current).forEach(
       (v) => (controlsRef.current[v as keyof ControlsInterface] = false)
     );
@@ -295,7 +291,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     }, 2000);
   };
 
-  const isMobile = () => width < 768;
+  const isMobile = () => window.innerWidth < 768;
 
   const blockChange = (blockChoice: number) => {
     const block = new Image();
@@ -318,7 +314,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
   }
 
   function draw() {
-    contextRef.current!.clearRect(0, 0, width, height);
+    contextRef.current!.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     let cx = 0;
     let cy = 0;

@@ -254,6 +254,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
             player.score++;
             coins.splice(i, 1);
             if (player.score >= END_GAME_SCORE) {
+              console.log(player.name, "Wins!");
               socketMap.forEach((value, key) => {
                 if (key === player.id) {
                   value.emit("playVictorySound", "You are");
