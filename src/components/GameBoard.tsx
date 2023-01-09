@@ -83,7 +83,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     //playerSprite.src = setSprite();
 
     window.addEventListener("keydown", (e) => {
-      if (bgMusic.current!.paused) bgMusic.current!.play();
       setControls(e.key.toLowerCase() as KeyMap, true);
     });
     window.addEventListener("keyup", (e) => {
@@ -101,9 +100,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     victoryAudio.current!.volume = 0.1;
     defeatAudio.current!.volume = 0.1;
 
-    bgMusic.current!.volume = 0.1;
-    bgMusic.current!.autoplay = true;
-    bgMusic.current!.loop = true;
+    if (bgMusic.current) {
+      bgMusic.current!.volume = 0.1;
+      bgMusic.current!.autoplay = true;
+      bgMusic.current!.loop = true;
+    }
 
     socketInitializer();
     const canvas = canvasRef.current;
@@ -129,8 +130,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
         canvas!.width = window.innerWidth;
         canvas!.height = window.innerHeight;
       });
-      bgMusic.current!.pause();
-      bgMusic.current!.srcObject = null;
+      // bgMusic.current!.pause();
+      // bgMusic.current!.srcObject = null;
       console.log("Game Dismounting");
       //socket.close();
     };
@@ -138,7 +139,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
 
   useEffect(() => {
     mobileControls.forEach((value, key) => {
-      if (bgMusic.current!.paused) bgMusic.current!.play();
       setControls(key, value);
     });
   }, [mobileControls]);
@@ -187,6 +187,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     }
   };
 
+  const isMobile = () => window.innerWidth < 768;
+
   const socketInitializer = () => {
     // fetch("/api/socket");
     // socket = SocketIOClient(window.location.origin, {
@@ -196,7 +198,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     // socket.on("connect", () => {
     //   console.log("Connected to the server.");
     // });
-    // socket.on("disconnect", () => {
+
+    // socket.off("disconnect").on("disconnect", () => {
     //   console.log("Disconnected from the server.");
     //   bgMusic.current!.pause();
     //   bgMusic.current!.srcObject = null;
@@ -290,8 +293,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
       window.clearInterval(roundChange);
     }, 2000);
   };
-
-  const isMobile = () => window.innerWidth < 768;
 
   const blockChange = (blockChoice: number) => {
     const block = new Image();

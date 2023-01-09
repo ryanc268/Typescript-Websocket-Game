@@ -17,6 +17,7 @@ const MobileControls: React.FC<MobileControlsProps> = ({
     //TODO: Possibly do this without a map? Would need testing to see if its as responsive
     let controls: Map<KeyMap, boolean> = new Map();
     controls.set(key, state);
+    //TODO: Fix this so that it doesn't rerender the game screen every control input. This will get VERY costly on the client if not fixed
     setMobileControls(controls);
   };
 
