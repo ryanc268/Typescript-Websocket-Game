@@ -269,7 +269,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
   };
 
   const endGame = (name: string) => {
-    toast(`${name} the winner!`, {
+    toast(`${name} the winner!!`, {
       position: "top-center",
       autoClose: 1000,
       hideProgressBar: false,
