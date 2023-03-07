@@ -21,9 +21,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const [mobileControls, setMobileControls] = useState<Map<KeyMap, boolean>>(
-    new Map()
-  );
+  const mobileControls = useRef<Map<KeyMap, boolean>>(new Map());
 
   let controlsRef = useRef<ControlsInterface>({
     up: false,
@@ -137,12 +135,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
     };
   });
 
-  useEffect(() => {
-    mobileControls.forEach((value, key) => {
-      setControls(key, value);
-    });
-  }, [mobileControls]);
-
   const startCanvas = () => {
     contextRef.current!.fillStyle = "red";
     window.requestAnimationFrame(loop);
@@ -166,24 +158,23 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
   // };
 
   const setControls = (key: KeyMap, active: boolean) => {
-    let controls = controlsRef.current;
     if (key === KeyMap.Down) {
-      controls.down = active;
+      controlsRef.current.down = active;
     }
     if (key === KeyMap.Left) {
-      controls.left = active;
+      controlsRef.current.left = active;
     }
     if (key === KeyMap.Right) {
-      controls.right = active;
+      controlsRef.current.right = active;
     }
     if (key === KeyMap.Jump) {
-      controls.jump = active;
+      controlsRef.current.jump = active;
     }
     if (key === KeyMap.Respawn) {
-      controls.respawn = active;
+      controlsRef.current.respawn = active;
     }
     if (key === KeyMap.Sprint) {
-      controls.sprint = active;
+      controlsRef.current.sprint = active;
     }
   };
 
@@ -426,7 +417,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ setIsCustomized }) => {
         <>
           <Leaderboard players={players} currentPlayer={currentPlayer} />
           {isMobile() ? (
-            <MobileControls setMobileControls={setMobileControls} />
+            <MobileControls controlsRef={controlsRef} />
           ) : (
             <Controls />
           )}

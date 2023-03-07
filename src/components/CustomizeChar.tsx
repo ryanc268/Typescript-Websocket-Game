@@ -41,7 +41,7 @@ const CustomizeChar: React.FC<CustomizeCharProps> = ({
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-full flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Image
             className="mx-auto h-12 w-auto"
@@ -59,7 +59,7 @@ const CustomizeChar: React.FC<CustomizeCharProps> = ({
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-zinc-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="bg-zinc-800 py-8 px-4 shadow rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
