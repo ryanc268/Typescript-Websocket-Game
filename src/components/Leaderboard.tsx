@@ -1,11 +1,9 @@
-//TODO: Fix this to not crash the game
 import { Dialog, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { MutableRefObject, useEffect, useRef, Fragment, useState } from "react";
+import { MutableRefObject, useEffect, Fragment, useState } from "react";
 import Image from "next/image";
 import { END_GAME_SCORE } from "../global/constants";
 import { Player } from "../global/types/gameTypes";
-import styles from "../styles/Home.module.css";
 
 interface LeaderboardProps {
   players: MutableRefObject<Player[]>;
@@ -16,77 +14,45 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   players,
   currentPlayer,
 }) => {
-  const leaderboardElRef = useRef<HTMLDivElement | null>(null);
-  const playerNameRef = useRef<HTMLParagraphElement | null>(null);
-  const playerColourRef = useRef<HTMLDivElement | null>(null);
+  const [sortedScoresRef, setSortedScoresRef] = useState<Player[]>();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const LEADERBOARD_REFRESH_RATE = 1000;
+  const LEADERBOARD_REFRESH_RATE = 200;
 
   useEffect(() => {
-    const interval = setInterval(drawLeaderboard, LEADERBOARD_REFRESH_RATE);
+    const interval = setInterval(updateLeaderboard, LEADERBOARD_REFRESH_RATE);
     return () => window.clearInterval(interval);
   });
 
-  const drawLeaderboard = () => {
-    if (playerNameRef.current && playerColourRef.current) {
-      playerColourRef.current.style.background =
-        currentPlayer.current?.colour ?? "";
-      playerNameRef.current.innerHTML =
-        `
-        ${currentPlayer.current?.name} -
-          ${currentPlayer.current?.score}/${END_GAME_SCORE}` ?? "";
-    }
-    if (leaderboardElRef.current) {
-      leaderboardElRef.current!.innerHTML = "";
-      const sortedScores = [...players.current].sort(
-        (p1, p2) => p2.score - p1.score
-      );
-      for (const player of sortedScores) {
-        const scoreEl = document.createElement("div");
-        const nameLine = document.createElement("div");
-        const colour = document.createElement("div");
-        const label = document.createElement("div");
-        const ping = document.createElement("span");
-
-        colour.className = `${styles.colour}`;
-        colour.style.background = `${player.colour}`;
-
-        label.innerText = `${player.name}: ${player.score}/${END_GAME_SCORE}`;
-        label.className = `${styles.name}`;
-        ping.className = `${styles.ping}`;
-        ping.style.color = pingColourPicker(player.ping);
-        ping.innerHTML = `${player.ping}ms`;
-
-        nameLine.append(colour);
-        nameLine.append(label);
-
-        scoreEl.append(nameLine);
-        scoreEl.append(ping);
-        leaderboardElRef.current!.append(scoreEl);
-      }
-    }
+  const updateLeaderboard = () => {
+    setSortedScoresRef(
+      [...players.current].sort((p1, p2) => p2.score - p1.score)
+    );
   };
 
   const pingColourPicker = (ping: number) => {
     switch (true) {
       case ping < 70:
-        return "#186e1f";
+        return "text-green-800"; //"#186e1f"
       case ping < 110:
-        return "#2ac237";
+        return "text-green-500"; //"#2ac237"
       case ping < 160:
-        return "#d0f05d";
+        return "text-lime-300"; //"#d0f05d"
       case ping < 210:
-        return "#e7ba3e";
+        return "text-amber-400"; //"#e7ba3e"
       case ping < 260:
-        return "#e6873b";
+        return "text-orange-400"; //"#e6873b"
       case ping >= 260:
-        return "#aa3229";
+        return "text-orange-800"; //"#aa3229"
       default:
-        return "#186e1f";
+        return "text-green-800"; //"#186e1f"
     }
   };
+  const bgColourPicker = (playerColour: string) => {
+    return { background: playerColour } as React.CSSProperties;
+  };
+
   return (
     <>
       <div>
@@ -153,22 +119,39 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
                       />
                       <p className="ml-5 text-xl">Leaderboard</p>
                     </div>
-                    <nav
-                      ref={leaderboardElRef}
-                      className="mt-5 flex-1 space-y-1 px-2"
-                    ></nav>
+                    <nav className="mt-5 flex-1 space-y-1 px-2">
+                      {sortedScoresRef?.map((p, i) => (
+                        <div key={i} className="flex flex-col py-1">
+                          <div className="flex">
+                            <div
+                              style={bgColourPicker(p.colour)}
+                              className="mr-1 scale-75 p-4"
+                            />
+                            <h3 className="text-xl">{`${p.name}: ${p.score}/${END_GAME_SCORE}`}</h3>
+                          </div>
+                          <h4 className={`text-xs ${pingColourPicker(p.ping)}`}>
+                            {p.ping}ms
+                          </h4>
+                        </div>
+                      ))}
+                    </nav>
                   </div>
                   <div className="flex flex-shrink-0 bg-gray-700 p-4">
                     <div className="flex items-center">
                       <div
-                        ref={playerColourRef}
+                        style={bgColourPicker(
+                          currentPlayer.current
+                            ? currentPlayer.current?.colour
+                            : ""
+                        )}
                         className="inline-block h-9 w-9 rounded-full"
-                      ></div>
+                      />
                       <div className="ml-3">
-                        <p
-                          ref={playerNameRef}
-                          className="text-base font-medium text-white"
-                        ></p>
+                        <h3 className="text-base font-medium text-white">
+                          {`${currentPlayer.current?.name ?? "Loading..."} - ${
+                            currentPlayer.current?.score ?? "0"
+                          }/${END_GAME_SCORE}`}
+                        </h3>
                       </div>
                     </div>
                   </div>
@@ -196,30 +179,45 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
                 />
                 <p className="ml-5 text-xl">Leaderboard</p>
               </div>
-              <nav
-                ref={leaderboardElRef}
-                className="mt-5 flex-1 space-y-1 px-2"
-              ></nav>
+              <nav className="mt-5 flex-1 space-y-1 px-2">
+                {sortedScoresRef?.map((p, i) => (
+                  <div key={i} className="flex flex-col py-1">
+                    <div className="flex">
+                      <div
+                        style={bgColourPicker(p.colour)}
+                        className="mr-1 scale-75 p-4"
+                      />
+                      <h3 className="text-xl">{`${p.name}: ${p.score}/${END_GAME_SCORE}`}</h3>
+                    </div>
+                    <h4 className={`text-xs ${pingColourPicker(p.ping)}`}>
+                      {p.ping}ms
+                    </h4>
+                  </div>
+                ))}
+              </nav>
             </div>
             <div className="flex flex-shrink-0 bg-gray-700 p-4">
               <div className="flex items-center">
                 <div
-                  ref={playerColourRef}
+                  style={bgColourPicker(
+                    currentPlayer.current ? currentPlayer.current?.colour : ""
+                  )}
                   className="inline-block h-9 w-9 rounded-full"
                 ></div>
 
                 <div className="ml-3">
-                  <p
-                    ref={playerNameRef}
-                    className="text-lg font-medium text-white"
-                  ></p>
+                  <h3 className="text-lg font-medium text-white">
+                    {`${currentPlayer.current?.name ?? "Loading..."} - ${
+                      currentPlayer.current?.score ?? "0"
+                    }/${END_GAME_SCORE}`}
+                  </h3>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-1 flex-col md:pl-64">
-          <div className="sticky top-0 z-10 bg-gray-700 pl-1 pt-1 sm:pl-3 sm:pt-3 md:hidden">
+          <div className="sticky top-0 z-10 flex items-center bg-gray-700 pl-1 pt-1 sm:pl-3 sm:pt-3 md:hidden">
             <button
               type="button"
               className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-100 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -228,6 +226,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
               <span className="sr-only">Open sidebar</span>
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
+            <h3 className="text-lg text-white">
+              {`${currentPlayer.current?.name ?? "Loading..."} - ${
+                currentPlayer.current?.score ?? "0"
+              }/${END_GAME_SCORE}`}
+            </h3>
           </div>
           <main className="flex-1">
             <div className="py-6">
